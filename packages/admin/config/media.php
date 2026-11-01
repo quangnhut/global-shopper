@@ -1,0 +1,129 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storage Disk
+    |--------------------------------------------------------------------------
+    |
+    | Specifies the configuration for resources storage, this will be to store
+    | all media of your products, brands, categories, etc.
+    |
+    */
+
+    'storage' => [
+        'collection_name' => 'uploads',
+        'thumbnail_collection' => 'thumbnail',
+        'disk_name' => 'public',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Media Mine Types
+    |--------------------------------------------------------------------------
+    |
+    | Spatie media-library mime types supported when you upload any image
+    |
+    */
+
+    'accepts_mime_types' => [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/avif',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Downloadable File Types
+    |--------------------------------------------------------------------------
+    |
+    | Mime types accepted by the product "files" collection used for
+    | downloadable goods. Executable types (HTML, SVG, JavaScript) are
+    | deliberately excluded to prevent stored XSS from same-origin media.
+    |
+    */
+
+    'accepts_file_types' => [
+        'application/pdf',
+        'application/zip',
+        'application/x-rar-compressed',
+        'application/x-7z-compressed',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+        'text/csv',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Media Filesize
+    |--------------------------------------------------------------------------
+    |
+    | This setting allows you to define the maximum size of your images.
+    |
+    */
+
+    'max_size' => [
+        'thumbnail' => 1024, // Default size for thumbnail image (1MB). This config is the same for brand, category and collection thumbnail
+        'images' => 2048, // Default size for individual collection image for product (2MB)
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Media Conversion
+    |--------------------------------------------------------------------------
+    |
+    | Image conversion lets you display images according to the dimensions of
+    | the product photos you have in your store.
+    |
+    | This configuration allows you to customize each poster according to
+    | the size on the desired section of your store and adapt it directly
+    | to your design.
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Uploads
+    |--------------------------------------------------------------------------
+    |
+    | Files uploaded from the "Uploads" page of the admin panel (like the
+    | WordPress media library). Files are stored on the given disk inside
+    | "{directory}/{year}/{month}". Max size is in kilobytes.
+    |
+    */
+
+    'uploads' => [
+        'disk' => env('SHOPPER_UPLOADS_DISK', 'public'),
+        'directory' => env('SHOPPER_UPLOADS_DIRECTORY', 'uploads'),
+        'max_size' => 10240,
+        'extensions' => ['png', 'jpg', 'jpeg', 'webp', 'gif', 'zip', 'txt'],
+        'mime_types' => [
+            'image/png',
+            'image/jpeg',
+            'image/webp',
+            'image/gif',
+            'application/zip',
+            'application/x-zip-compressed',
+            'text/plain',
+        ],
+    ],
+
+    'conversions' => [
+        'large' => [
+            'width' => 800,
+            'height' => 800,
+        ],
+        'medium' => [
+            'width' => 500,
+            'height' => 500,
+        ],
+    ],
+
+];

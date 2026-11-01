@@ -1,0 +1,27 @@
+{
+  "name": "shopper/seo",
+  "description": "SEO for Shopper: site identity, title and meta templates, per-entry meta, schema, indexing rules and tracking",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "shopper/core": "*",
+    "shopper/framework": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Shopper\\Seo\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Shopper\\Seo\\SeoServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

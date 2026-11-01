@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+use Livewire\Livewire;
+use Shopper\Livewire\Pages\Brand\Index;
+use Tests\Core\Stubs\Brand;
+use Tests\Core\Stubs\User;
+
+uses(Tests\Admin\TestCase::class);
+
+beforeEach(function (): void {
+
+    $this->user = User::factory()->create();
+    $this->user->givePermissionTo('browse_brands');
+    $this->actingAs($this->user);
+});
+
+describe(Index::class, function (): void {
+    it('blocks reordering brands for users without `edit_brands`', function (): void {
+        $a = Brand::factory()->create(['position' => 1]);
+        $b = Brand::factory()->create(['position' => 2]);
+
+        Livewire::test(Index::class)->call('reorderTable', [$b->getKey(), $a->getKey()]);
+
+        expect($a->refresh()->position)->toBe(1)
+            ->and($b->refresh()->position)->toBe(2);
+    });
+
+    it('allows reordering brands for users with `edit_brands`', function (): void {
+        $this->user->givePermissionTo('edit_brands');
+
+        $a = Brand::factory()->create(['position' => 1]);
+        $b = Brand::factory()->create(['position' => 2]);
+
+        Livewire::test(Index::class)->call('reorderTable', [$b->getKey(), $a->getKey()]);
+
+        expect($a->refresh()->position)->toBe(2)
+            ->and($b->refresh()->position)->toBe(1);
+    });
+
+    it('can render brands index component', function (): void {
+        Livewire::test(Index::class)
+            ->assertOk()
+            ->assertViewIs('shopper::livewire.pages.brand.index')
+            ->assertSee(__('shopper::pages/brands.menu'));
+    });
+
+    it('can list brands in table', function (): void {
+        Brand::factory()->count(3)->create();
+
+        Livewire::test(Index::class)
+            ->loadTable()
+            ->assertCanSeeTableRecords(Brand::limit(3)->get());
+    });
+
+    it('can filter brands by visibility', function (): void {
+        Brand::factory()->count(2)->create(['is_enabled' => true]);
+        Brand::factory()->create(['is_enabled' => false]);
+
+        Livewire::test(Index::class)
+            ->filterTable('is_enabled', true)
+            ->assertCountTableRecords(2);
+    });
+})->group('livewire', 'brands');

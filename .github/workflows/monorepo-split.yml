@@ -1,0 +1,62 @@
+name: monorepo-split
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  split-monorepo:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - admin
+          - cart
+          - cms
+          - core
+          - payment
+          - seo
+          - sidebar
+          - shipping
+          - stripe
+          - types
+          - upgrade
+        include:
+          - package: admin
+            repository: admin
+          - package: cart
+            repository: cart
+          - package: cms
+            repository: cms
+          - package: core
+            repository: core
+          - package: payment
+            repository: payment
+          - package: seo
+            repository: seo
+          - package: sidebar
+            repository: sidebar
+          - package: shipping
+            repository: shipping
+          - package: stripe
+            repository: stripe
+          - package: types
+            repository: shopper-types
+          - package: upgrade
+            repository: upgrade
+    steps:
+      - uses: actions/checkout@v6
+      - name: Monorepo Split of ${{ matrix.package }}
+        uses: danharrin/monorepo-split-github-action@v2.4.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          package_directory: 'packages/${{ matrix.package }}'
+          repository_organization: 'shopperlabs'
+          repository_name: '${{ matrix.repository }}'
+          branch: 2.x
+          tag: ${{ github.ref_name }}
+          user_name: 'Arthur Monney'
+          user_email: 'monneylobe@gmail.com'
