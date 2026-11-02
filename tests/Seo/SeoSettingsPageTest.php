@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
+use Filament\Actions\Contracts\HasActions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Shopper\Core\Actions\StoreUploadAction;
+use Shopper\Livewire\Components\Products\Form\Seo as ProductSeoForm;
 use Shopper\Seo\Actions\GenerateSiteIconsAction;
+use Shopper\Seo\Livewire\Components\EntrySeoPanel;
 use Shopper\Seo\Livewire\Pages\SeoSettingsPage;
 use Shopper\Seo\Settings\SeoSettings;
 use Tests\Core\Stubs\User;
@@ -88,6 +91,27 @@ describe(SeoSettingsPage::class, function (): void {
 
         $this->actingAs($user)->get(route('shopper.seo.settings'))->assertRedirect(route('shopper.forbidden'));
     });
+
+    it('adds a row to the no-index paths repeater through its `add` action', function (): void {
+        $component = Livewire::test(SeoSettingsPage::class);
+
+        $before = count($component->get('data.indexing.noindex_paths') ?? []);
+
+        $component
+            ->call('mountAction', 'add', [], ['schemaComponent' => 'form.indexing.noindex_paths'])
+            ->assertHasNoErrors();
+
+        expect($component->get('data.indexing.noindex_paths'))->toHaveCount($before + 1);
+    });
+
+    it('can mount the actions rendered by its schema fields', function (string $component): void {
+        expect(is_subclass_of($component, HasActions::class))->toBeTrue()
+            ->and(method_exists($component, 'mountAction'))->toBeTrue();
+    })->with([
+        SeoSettingsPage::class,
+        EntrySeoPanel::class,
+        ProductSeoForm::class,
+    ]);
 })->group('seo', 'livewire');
 
 describe(GenerateSiteIconsAction::class, function (): void {

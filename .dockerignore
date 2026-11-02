@@ -1,0 +1,14 @@
+.git
+.claude
+.github
+coverage
+node_modules
+uploads
+vendor
+packages/*/vendor
+packages/*/node_modules
+
+# Secrets stay out of the image: production mounts .env.production at runtime.
+.env
+.env.*
+workbench/.env

@@ -26,6 +26,7 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.testing.example
+!.env.production.example
 *.pem
 *.key
 auth.json

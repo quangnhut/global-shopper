@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shopper\Seo\Livewire\Pages;
 
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
@@ -38,9 +40,10 @@ use Shopper\Traits\HandlesAuthorizationExceptions;
  *
  * @property-read Schema $form
  */
-class SeoSettingsPage extends AbstractPageComponent implements HasSchemas
+class SeoSettingsPage extends AbstractPageComponent implements HasActions, HasSchemas
 {
     use HandlesAuthorizationExceptions;
+    use InteractsWithActions;
     use InteractsWithSchemas;
 
     public const array SEPARATORS = ['-', '–', '|', '·', '•', '»', '/'];

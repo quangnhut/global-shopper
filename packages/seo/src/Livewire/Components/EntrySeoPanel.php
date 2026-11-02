@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shopper\Seo\Livewire\Components;
 
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
@@ -22,8 +24,9 @@ use Shopper\Seo\Support\SeoFields;
  *
  * @property-read Schema $form
  */
-class EntrySeoPanel extends Component implements HasSchemas
+class EntrySeoPanel extends Component implements HasActions, HasSchemas
 {
+    use InteractsWithActions;
     use InteractsWithSchemas;
 
     #[Locked]

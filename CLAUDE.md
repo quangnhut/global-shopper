@@ -38,12 +38,23 @@ There is also a `packages/cms` package (`Shopper\Cms\CmsServiceProvider`, WordPr
 This repo is a **package monorepo, not a Laravel app**. Locally it runs inside an Orchestra Testbench
 "workbench" app, and `vendor/bin/testbench` replaces `php artisan` everywhere.
 
+### Compose files: which one to use
+
+- **`docker-compose-dev.yml` is for localhost development**: mounts the repo so code changes apply immediately, exposes MySQL on the host.
+- **`docker-compose.yml` is for production only**: code baked into the image (`docker/php/Dockerfile.prod`), required
+  secrets from `.env.production`, port bound to `127.0.0.1`, scheduler service. Never use it for local development.
+- `cp .env.example .env` once on a dev machine. It sets `COMPOSE_FILE=docker-compose-dev.yml`, so every plain
+  `docker compose ...` command in this file targets dev. Without it, those commands read the production file and stop
+  with `required variable DB_PASSWORD is missing`.
+- The root `.env` is read by Compose only (`COMPOSE_FILE`, `APP_PORT`, `FORWARD_DB_PORT`). Keep each stack's changes in its own file.
+
 ### Requirements and conditions
 
 - **Run PHP tooling in Docker.** `vendor/` needs PHP ≥ 8.4.1 and the host PHP is 8.3, so Pest, PHPStan,
   Rector and Testbench fail on the host. Only Pint works there. The `.claude/hooks/guard-bash.sh` hook blocks host runs.
 - Docker + Docker Compose. Node 22+ for assets (CI uses 22).
-- Ports: app `8000` (`APP_PORT`), MySQL `3307` on the host (`FORWARD_DB_PORT`, because 3306/33060 are taken by a local MySQL).
+- Dev ports: app `8088` (`APP_PORT` in the root `.env`), MySQL `3307` on the host (`FORWARD_DB_PORT`, because 3306/33060 are
+  taken by a local MySQL). Inside the containers they stay `8000` and `3306`, so `DB_PORT` in `workbench/.env` must be `3306`.
 - App config lives in **`workbench/.env`** (copy `workbench/.env.example`). Testbench ignores the root `.env`.
   The tests never read `workbench/.env` (`$loadEnvironmentVariables = false` in `tests/TestCase.php`).
 - Demo seeders live in `workbench/database/seeders` (namespace `Database\Seeders`, entry `DatabaseSeeder`).
@@ -52,20 +63,27 @@ This repo is a **package monorepo, not a Laravel app**. Locally it runs inside a
 ### Localhost (development)
 
 ```bash
+cp .env.example .env                          # once; plain `docker compose` now means docker-compose-dev.yml
 cp workbench/.env.example workbench/.env      # once; set APP_KEY (base64:...) if empty
 docker compose up -d --build                  # app (PHP 8.4, testbench serve) + mysql 8.4
 docker compose exec -T app vendor/bin/testbench migrate:fresh --seed
 npm install && npm run dev                    # only when changing admin CSS/JS (watch mode)
 ```
 
-- Admin: http://localhost:8000/<prefix>/login, `admin@laravelshopper.dev` / `password` (all seeded customers use `password`).
+- Admin: http://localhost:8088/<prefix>/login, `admin@laravelshopper.dev` / `password` (all seeded customers use `password`).
   The prefix is `SHOPPER_PREFIX` in `workbench/.env` (default `cpanel`; `.env.testing` is only read by the tests).
   After changing it, `docker compose restart app` so the entrypoint links the admin images at the new prefix;
   open `/<prefix>/login` or `/<prefix>/dashboard` (the bare `/<prefix>` is shadowed by that image folder).
 - The container entrypoint (`docker/php/entrypoint.sh`) runs on every start: `composer install` if needed,
-  refreshes the skeleton `.env`, `package:discover`, `storage:link`, `filament:assets`, publishes TinyMCE
+  links `./uploads` into the skeleton's public disk, refreshes the skeleton `.env`, `package:discover`, `storage:link`, `filament:assets`, publishes TinyMCE
   (`vendor:publish --tag=shopper-cms-assets`), and links
   `packages/admin/public` to `/cpanel` (logo, favicons). Rebuild the image after editing the entrypoint.
+- **The app container uses its own `vendor/`, kept in the `vendor` Docker volume**, not the host folder (loading it through the
+  Windows bind mount made every request ~13x slower). So run Composer in the container, and do not expect host edits or
+  host-side `composer` runs to reach the app. Skeleton logs and storage are in the volume too; read them with `docker compose exec`.
+- The host `vendor/` is only a copy for the IDE, host Pint and `npm run build` (which imports from it). After Composer changes
+  refresh it with `docker compose run --rm --no-deps -v .:/host --entrypoint sh app -c 'cp -a vendor/. /host/vendor/'`
+  (about 3 minutes). `docker compose cp` stops at the first symlink on Windows and leaves a partial copy.
 - Admin uploads are stored in `./uploads` on the host and served at `/storage/uploads/YYYY/MM/...`.
 - Scheduled CMS commands (`shopper:cms:publish-scheduled`, `shopper:cms:empty-trash`) do not run automatically
   in dev; call them with `docker compose exec -T app vendor/bin/testbench <command>`.
@@ -79,14 +97,14 @@ docker compose exec -T app vendor/bin/phpstan analyse --memory-limit=-1
 docker compose exec -T app vendor/bin/testbench migrate               # new migrations only, keeps data
 docker compose exec -T app vendor/bin/testbench route:list --path=cpanel
 vendor/bin/pint [paths]                                               # host is fine
-composer dump-autoload                                                # after adding classes/namespaces
+docker compose exec -T app composer dump-autoload                     # after adding classes/namespaces
 ```
 
 ### Troubleshooting (seen in this repo)
 
 - A new package's config/addon is missing in the dev app: `docker compose exec -T app vendor/bin/testbench package:discover`.
 - Tests fail with `MultipleRootElementsDetectedException`, `RootTagMissingFromViewException` or
-  `Undefined variable $__blaze`: stale compiled views. Delete
+  `Undefined variable $__blaze`: stale compiled views. Delete, inside the container,
   `vendor/orchestra/testbench-core/laravel/storage/framework/views/*.php`. The dev server compiles to
   `/tmp/shopper-views` (`VIEW_COMPILED_PATH`), so server and tests no longer clash.
 - Browser console shows `filamentDropdown is not defined` (menus stuck open): Filament assets not published,
@@ -94,6 +112,9 @@ composer dump-autoload                                                # after ad
 - `UploadedFile::fake()` reports a mime type guessed from the file name; to test content checks use a real
   temp file with `new UploadedFile($path, 'name.png', test: true)`.
 - Never run `docker compose down -v` unless you want to delete the MySQL data volume.
+
+- `/usr/bin/env: 'bash\r'` when the app container starts: a shell script was checked out with CRLF. `.gitattributes`
+  keeps `*.sh` on LF; convert the file with `sed -i 's/\r$//' <file>` and rebuild the image.
 
 ### Building assets (release)
 
@@ -103,6 +124,22 @@ composer dump-autoload                                                # after ad
   `packages/*/resources/{css,js}` change. Never edit `dist/` by hand.
 - Before a release: `npm run build`, `composer test:lint`, `composer test:refactor`, PHPStan and the full Pest suite
   (all PHP commands inside Docker). Tags trigger `monorepo-split.yml`, which pushes each package to its own repository.
+
+### Production with Docker Compose (`docker-compose.yml`)
+
+```bash
+cp .env.production.example .env.production    # once; fill in APP_KEY, DB_PASSWORD, DB_ROOT_PASSWORD, APP_URL, SHOPPER_PREFIX
+docker compose --env-file .env.production up -d --build    # app + scheduler + mysql; migrations run on start
+docker compose --env-file .env.production exec -T app vendor/bin/testbench db:seed --force --class='Shopper\Core\Database\Seeders\ShopperSeeder'    # once
+docker compose --env-file .env.production exec -T app vendor/bin/testbench db:seed --force --class='Shopper\Database\Seeders\AuthTableSeeder'    # once
+docker compose --env-file .env.production exec app vendor/bin/testbench shopper:user    # once; creates the first admin
+```
+
+- This stack runs the Testbench workbench on PHP's built-in server (`testbench serve`), with dev dependencies in the image.
+  It listens on `127.0.0.1` only, so put a reverse proxy that terminates TLS in front of it. For a production-grade
+  deployment, install Shopper in a real Laravel app (next section).
+- Sessions, cache and logs live in the container and are lost when it is recreated; uploads and MySQL are in named volumes.
+- The built-in server does not compress responses, so enable gzip or Brotli in the reverse proxy for JS and CSS.
 
 ### Production (installing Shopper in a real Laravel app)
 

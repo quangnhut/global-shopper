@@ -12,7 +12,9 @@ RUN apt-get update \
     && install-php-extensions intl pdo_mysql zip gd exif bcmath pcntl soap
 
 RUN groupadd --gid ${GID} shopper \
-    && useradd --uid ${UID} --gid ${GID} --create-home shopper
+    && useradd --uid ${UID} --gid ${GID} --create-home shopper \
+    && mkdir -p /var/www/html/vendor \
+    && chown -R shopper:shopper /var/www/html # The vendor volume inherits this owner, so Composer can write to it.
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/zz-shopper.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint

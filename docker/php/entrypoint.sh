@@ -5,6 +5,12 @@ if [ ! -f vendor/autoload.php ]; then
     composer install --no-interaction --prefer-dist
 fi
 
+# Admin uploads live in ./uploads on the host (served at /storage/uploads). A link rather than a
+# nested bind mount: Docker would create vendor/ as root, and Composer could empty the mounted folder.
+uploads=vendor/orchestra/testbench-core/laravel/storage/app/public/uploads
+[ -L "$uploads" ] || rmdir "$uploads" 2>/dev/null || true
+ln -sfn /var/www/html/uploads "$uploads"
+
 # Testbench copies workbench/.env into its skeleton only when none exists there,
 # so drop any stale copy to always start from the current workbench/.env.
 rm -f vendor/orchestra/testbench-core/laravel/.env

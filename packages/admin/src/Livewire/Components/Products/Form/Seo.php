@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shopper\Livewire\Components\Products\Form;
 
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\KeyValue;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Group;
@@ -21,9 +23,10 @@ use Shopper\Traits\HandlesAuthorizationExceptions;
 /**
  * @property-read Schema $form
  */
-class Seo extends Component implements HasSchemas
+class Seo extends Component implements HasActions, HasSchemas
 {
     use HandlesAuthorizationExceptions;
+    use InteractsWithActions;
     use InteractsWithSchemas;
 
     /** @var Model&Product */

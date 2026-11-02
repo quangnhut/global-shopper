@@ -1,0 +1,32 @@
+FROM php:8.4-cli-bookworm
+
+COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions intl pdo_mysql zip gd exif bcmath pcntl soap opcache
+
+RUN groupadd --gid 1000 shopper \
+    && useradd --uid 1000 --gid 1000 --create-home shopper \
+    && mkdir -p /var/www/html \
+    && chown shopper:shopper /var/www/html
+
+COPY docker/php/php.prod.ini /usr/local/etc/php/conf.d/zz-shopper.ini
+COPY docker/php/entrypoint.prod.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+WORKDIR /var/www/html
+USER shopper
+
+COPY --chown=shopper:shopper . .
+
+# Dev dependencies stay: the app runs through orchestra/testbench, which is one of them.
+RUN composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader \
+    && mkdir -p vendor/orchestra/testbench-core/laravel/storage/app/public/uploads
+
+ENV PHP_CLI_SERVER_WORKERS=4
+
+ENTRYPOINT ["entrypoint"]
+CMD ["vendor/bin/testbench", "serve", "--host=0.0.0.0", "--port=8000"]

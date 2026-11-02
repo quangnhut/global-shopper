@@ -5,11 +5,13 @@ description: How to run, seed, test and debug this Shopper monorepo with Docker 
 
 # Docker development environment
 
-- Stack: `docker-compose.yml` → `app` (PHP 8.4, `testbench serve` on :8000) and `mysql` (8.4, host port 3307).
+- Stack: `docker-compose-dev.yml` → `app` (PHP 8.4, `testbench serve`, host port 8088) and `mysql` (8.4, host port 3307). `docker-compose.yml` is production only.
+- Run `cp .env.example .env` once so plain `docker compose` commands use the dev file.
 - The host PHP is 8.3 and cannot load `vendor/` (needs ≥ 8.4.1). Run PHP tooling in the container.
   Only Pint works on the host.
+- The container's `vendor/` is the `vendor` Docker volume, not the host folder: run Composer in the container (see CLAUDE.md for refreshing the host copy).
 - App config: `workbench/.env` (Testbench reads it from there, not from the root `.env`).
-- Admin: http://localhost:8000/cpanel, `admin@laravelshopper.dev` / `password`.
+- Admin: http://localhost:8088/<prefix>/login (`SHOPPER_PREFIX`), `admin@laravelshopper.dev` / `password`.
 
 ## Commands
 
@@ -27,7 +29,7 @@ vendor/bin/pint <paths>                                               # host is 
 
 - Demo seeders: `workbench/database/seeders` (namespace `Database\Seeders`, `DatabaseSeeder` is the entry point).
 - Workbench user model: `workbench/app/Models/User.php` (`AUTH_MODEL` in `workbench/.env`).
-- Uploaded files: `./uploads` on the host, mounted at the skeleton `storage/app/public/uploads`, served at `/storage/uploads/...`.
+- Uploaded files: `./uploads` on the host, linked into the skeleton `storage/app/public/uploads`, served at `/storage/uploads/...`.
 - The entrypoint (`docker/php/entrypoint.sh`) refreshes the skeleton `.env`, runs `storage:link`,
   `filament:assets`, and links `packages/admin/public` to `/cpanel` (logo, favicons).
 
@@ -37,7 +39,7 @@ vendor/bin/pint <paths>                                               # host is 
   run `docker compose exec -T app vendor/bin/testbench package:discover` (the entrypoint also does it on start).
 
 - `MultipleRootElementsDetectedException`, `Undefined variable $__blaze` or `RootTagMissingFromViewException`
-  in tests means stale compiled views in `vendor/orchestra/testbench-core/laravel/storage/framework/views`.
+  in tests means stale compiled views (inside the container) in `vendor/orchestra/testbench-core/laravel/storage/framework/views`.
   Delete `*.php` in that folder. The dev server compiles into `/tmp/shopper-views` (`VIEW_COMPILED_PATH`), so the two never clash.
 - Alpine errors like `filamentDropdown is not defined` in the browser mean Filament assets were not
   published. Restart the app container (`docker compose restart app`).
