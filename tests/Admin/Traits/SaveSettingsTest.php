@@ -34,8 +34,8 @@ describe('SaveSettings', function (): void {
     });
 
     it('invalidates default_currency cache when default_currency_id changes', function (): void {
-        $eur = Currency::query()->where('code', 'EUR')->firstOrFail();
-        $usd = Currency::query()->where('code', 'USD')->firstOrFail();
+        $eur = Currency::factory()->create(['code' => 'EUR']);
+        $usd = Currency::factory()->create(['code' => 'USD']);
 
         Setting::query()->create([
             'key' => 'default_currency_id',

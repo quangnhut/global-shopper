@@ -22,6 +22,11 @@ use Shopper\Core\Models\Supplier;
 final class CatalogSeeder extends Seeder
 {
     /**
+     * The demo prices above are USD cents: 25,000 ₫ per USD is 250 ₫ per cent.
+     */
+    private const int USD_CENTS_TO_VND = 250;
+
+    /**
      * @var array<string, list<string>>
      */
     private array $categories = [
@@ -62,21 +67,10 @@ final class CatalogSeeder extends Seeder
         ['Bookshelf Billy', 'Ikea', 'Furniture', 8900, null, 0, false],
     ];
 
-    /**
-     * Demo exchange rates from USD (the bundled currency data has none).
-     *
-     * @var array<string, float>
-     */
-    private array $exchangeRates = [
-        'USD' => 1,
-        'EUR' => 0.92,
-        'GBP' => 0.79,
-    ];
-
     public function run(): void
     {
         $country = Country::query()->where('cca2', 'US')->firstOrFail();
-        $currencies = Currency::query()->whereIn('code', ['USD', 'EUR', 'GBP'])->get()->keyBy('code');
+        $currency = Currency::query()->where('code', 'VND')->firstOrFail();
         $channel = resolve(ChannelContract::class)::query()->where('is_default', true)->firstOrFail();
 
         $inventory = Inventory::query()->create([
@@ -144,16 +138,12 @@ final class CatalogSeeder extends Seeder
                 $product->collections()->attach($featured->id);
             }
 
-            foreach ($currencies as $code => $currency) {
-                $rate = $this->exchangeRates[$code];
-
-                $product->prices()->create([
-                    'amount' => (int) round($price * $rate),
-                    'compare_amount' => $compare ? (int) round($compare * $rate) : null,
-                    'cost_amount' => (int) round($price * $rate * 0.6),
-                    'currency_id' => $currency->id,
-                ]);
-            }
+            $product->prices()->create([
+                'amount' => $price * self::USD_CENTS_TO_VND,
+                'compare_amount' => $compare ? $compare * self::USD_CENTS_TO_VND : null,
+                'cost_amount' => (int) round($price * self::USD_CENTS_TO_VND * 0.6),
+                'currency_id' => $currency->id,
+            ]);
 
             if ($stock > 0) {
                 $product->mutateStock(

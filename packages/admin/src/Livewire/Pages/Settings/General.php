@@ -12,7 +12,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
@@ -26,7 +25,6 @@ use Mckenziearts\Icons\Untitledui\Enums\Untitledui;
 use Shopper\Components\Section;
 use Shopper\Components\Separator;
 use Shopper\Core\Models\Country;
-use Shopper\Core\Models\Currency;
 use Shopper\Core\Models\Setting;
 use Shopper\Traits\HandlesAuthorizationExceptions;
 use Shopper\Traits\SaveSettings;
@@ -63,8 +61,6 @@ class General extends Component implements HasActions, HasSchemas
             'city',
             'state',
             'country_id',
-            'default_currency_id',
-            'currencies',
             'facebook_link',
             'instagram_link',
             'twitter_link',
@@ -163,34 +159,6 @@ class General extends Component implements HasActions, HasSchemas
                                 ->options(Country::query()->pluck('name', 'id'))
                                 ->searchable(),
                         ]),
-                    ]),
-                Separator::make(),
-                Section::make(__('shopper::pages/settings/global.general.store_currency'))
-                    ->aside()
-                    ->compact()
-                    ->description(__('shopper::pages/onboarding.currency_description'))
-                    ->extraAttributes(['class' => 'sh-section-aside'])
-                    ->schema([
-                        Select::make('currencies')
-                            ->label(__('shopper::forms.label.currencies'))
-                            ->helperText(__('shopper::pages/onboarding.currencies_description'))
-                            ->options(Currency::query()->orderBy('name')->pluck('name', 'id'))
-                            ->searchable()
-                            ->multiple()
-                            ->minItems(1)
-                            ->required()
-                            ->live()
-                            ->native(false),
-                        Select::make('default_currency_id')
-                            ->label(__('shopper::forms.label.default_currency'))
-                            ->options(
-                                fn (Get $get) => Currency::query()
-                                    ->select('name', 'id')
-                                    ->whereIn('id', $get('currencies'))
-                                    ->pluck('name', 'id')
-                            )
-                            ->native(false)
-                            ->required(),
                     ]),
                 Separator::make(),
                 Section::make(__('shopper::pages/settings/global.general.social_links'))

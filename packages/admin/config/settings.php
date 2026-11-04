@@ -28,7 +28,6 @@ return [
         Items\LegalSetting::class => true,
         Items\ZoneSetting::class => true,
         Items\TaxSetting::class => true,
-        Items\CurrencySetting::class => true,
     ],
 
 ];

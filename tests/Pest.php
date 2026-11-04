@@ -12,7 +12,13 @@ pest()->project()->github('shopperlabs/shopper');
  */
 function setupCurrencies(array $currencies = ['USD'], string $defaultCurrency = 'USD'): void
 {
-    $currencies = Currency::query()->select('id', 'code')->whereIn('code', $currencies)->get();
+    // The app ships with VND only, so tests create the other currencies they exercise.
+    $currencies = collect([...$currencies, $defaultCurrency])
+        ->unique()
+        ->map(fn (string $code): Currency => Currency::query()->firstOrCreate(
+            ['code' => $code],
+            ['name' => $code, 'symbol' => $code, 'format' => '1,0.00', 'exchange_rate' => 1, 'is_enabled' => true],
+        ));
 
     Setting::query()->updateOrCreate(
         ['key' => 'currencies'],

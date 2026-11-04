@@ -17,7 +17,7 @@ final class DiscountSeeder extends Seeder
     {
         $discounts = [
             ['WELCOME10', DiscountType::Percentage, 10, true, now()->subMonth(), now()->addMonths(6)],
-            ['FREESHIP', DiscountType::FixedAmount, 1000, true, now()->subWeek(), now()->addMonth()],
+            ['FREESHIP', DiscountType::FixedAmount, 250000, true, now()->subWeek(), now()->addMonth()],
             ['BLACKFRIDAY', DiscountType::Percentage, 25, false, now()->addMonth(), now()->addMonth()->addDays(4)],
         ];
 

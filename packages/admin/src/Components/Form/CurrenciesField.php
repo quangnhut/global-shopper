@@ -31,7 +31,7 @@ final class CurrenciesField
                                 ->label(__('shopper::forms.label.price_amount'))
                                 ->helperText(__('shopper::pages/products.amount_price_help_text'))
                                 ->statePath($currency->id.'.amount')
-                                ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                ->rules(['regex:/^\d{1,9}(\.\d{0,2})?$/'])
                                 ->required(fn (Get $get): bool => $get($currency->id.'.compare_amount') !== null)
                                 ->suffix($currency->code)
                                 ->currency($currency->code)
@@ -43,7 +43,7 @@ final class CurrenciesField
                                 ->afterStateUpdated(
                                     fn (?string $state, Set $set): mixed => $state ?? $set($currency->id.'.compare_amount', null)
                                 )
-                                ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                ->rules(['regex:/^\d{1,9}(\.\d{0,2})?$/'])
                                 ->suffix($currency->code)
                                 ->currency($currency->code)
                                 ->live(),
@@ -51,7 +51,7 @@ final class CurrenciesField
                                 ->label(__('shopper::forms.label.cost_per_item'))
                                 ->helperText(__('shopper::pages/products.cost_per_items_help_text'))
                                 ->statePath($currency->id.'.cost_amount')
-                                ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                ->rules(['regex:/^\d{1,9}(\.\d{0,2})?$/'])
                                 ->suffix($currency->code)
                                 ->currency($currency->code),
                         ])

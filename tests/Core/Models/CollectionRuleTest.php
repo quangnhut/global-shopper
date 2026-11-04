@@ -62,7 +62,7 @@ describe(CollectionRule::class, function (): void {
         $formatted = $rule->getFormattedValue();
 
         expect($formatted)->toBeString()
-            ->and($formatted)->toContain('$');
+            ->and($formatted)->toContain('₫');
     });
 
     it('returns raw value for non-price rules', function (): void {

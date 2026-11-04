@@ -68,7 +68,7 @@ if (! function_exists('shopper_currency')) {
         $currencyId = shopper_setting('default_currency_id');
 
         if (! $currencyId) {
-            return 'USD';
+            return 'VND';
         }
 
         return Cache::remember(
@@ -76,7 +76,7 @@ if (! function_exists('shopper_currency')) {
             now()->addHour(),
             fn (): string => Currency::query()
                 ->where('id', $currencyId)
-                ->value('code') ?? 'USD',
+                ->value('code') ?? 'VND',
         );
     }
 }

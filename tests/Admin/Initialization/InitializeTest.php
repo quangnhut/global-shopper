@@ -69,19 +69,11 @@ it('restores partial state from existing settings on `mount()`', function (): vo
 it('can save settings and create a default inventory through the wizard', function (): void {
     $this->asAdmin();
 
-    $currencies = Currency::query()
-        ->orderBy('id')
-        ->limit(2)
-        ->pluck('id')
-        ->toArray();
-
     Livewire::test(InitializationWizard::class)
         ->fillForm([
             'name' => 'My store',
             'email' => 'mystore@example.com',
             'country_id' => Country::query()->first()->id,
-            'currencies' => $currencies,
-            'default_currency_id' => $currencies[0],
             'street_address' => '34 Douala, Bonamoussadi',
             'postal_code' => '00237',
             'city' => 'Douala',
@@ -93,6 +85,15 @@ it('can save settings and create a default inventory through the wizard', functi
         ->call('save')
         ->assertHasNoFormErrors()
         ->assertRedirect($this->prefix.'/dashboard');
+
+    $vndId = Currency::query()->where('code', 'VND')->value('id');
+
+    expect(shopper_setting('default_currency_id'))
+        ->toBe($vndId)
+        ->and(shopper_setting('currencies'))
+        ->toBe([$vndId])
+        ->and(shopper_currency())
+        ->toBe('VND');
 
     expect(shopper_setting('name'))
         ->toBe('My store')
@@ -111,14 +112,10 @@ it('can save settings and create a default inventory through the wizard', functi
 it('does not create a duplicate `Inventory` when `save()` runs twice', function (): void {
     $this->asAdmin();
 
-    $currencies = Currency::query()->orderBy('id')->limit(1)->pluck('id')->toArray();
-
     $state = [
         'name' => 'Idempotent store',
         'email' => 'idem@example.com',
         'country_id' => Country::query()->first()->id,
-        'currencies' => $currencies,
-        'default_currency_id' => $currencies[0],
         'street_address' => '1 Test St',
         'postal_code' => '12345',
         'city' => 'Testville',
@@ -145,30 +142,22 @@ it('validates required fields on the information step', function (): void {
             'name' => '',
             'email' => '',
             'country_id' => '',
-            'currencies' => [],
-            'default_currency_id' => '',
         ])
         ->call('save')
         ->assertHasFormErrors([
             'name' => 'required',
             'email' => 'required',
-            'currencies' => 'required',
-            'default_currency_id' => 'required',
         ]);
 });
 
 it('validates required fields on the address step', function (): void {
     $this->asAdmin();
 
-    $currencies = Currency::query()->orderBy('id')->limit(1)->pluck('id')->toArray();
-
     Livewire::test(InitializationWizard::class)
         ->fillForm([
             'name' => 'My store',
             'email' => 'mystore@example.com',
             'country_id' => Country::query()->first()->id,
-            'currencies' => $currencies,
-            'default_currency_id' => $currencies[0],
             'street_address' => '',
             'postal_code' => '',
             'city' => '',
@@ -191,26 +180,6 @@ it('rejects an invalid email on the information step', function (): void {
         ])
         ->call('save')
         ->assertHasFormErrors(['email' => 'email']);
-});
-
-it('rejects a `default_currency_id` not present in selected `currencies`', function (): void {
-    $this->asAdmin();
-
-    $currencies = Currency::query()->orderBy('id')->limit(2)->pluck('id')->toArray();
-
-    Livewire::test(InitializationWizard::class)
-        ->fillForm([
-            'name' => 'My store',
-            'email' => 'mystore@example.com',
-            'country_id' => Country::query()->first()->id,
-            'currencies' => [$currencies[0]],
-            'default_currency_id' => $currencies[1],
-            'street_address' => '1 Test St',
-            'postal_code' => '12345',
-            'city' => 'Testville',
-        ])
-        ->call('save')
-        ->assertHasFormErrors(['default_currency_id']);
 });
 
 it('rejects a store `name` exceeding 100 characters', function (): void {
@@ -252,15 +221,11 @@ it('ignores unknown keys submitted in the form state', function (): void {
     $this->asAdmin();
 
     $country = Country::query()->first();
-    [$first, $second] = Currency::query()->orderBy('id')->limit(2)->pluck('id')->all();
-
     Livewire::test(InitializationWizard::class)
         ->fillForm([
             'name' => 'Acme',
             'email' => 'hello@acme.test',
             'country_id' => $country->id,
-            'currencies' => [$first, $second],
-            'default_currency_id' => $first,
             'street_address' => 'Akwa Avenue 34',
             'postal_code' => '00237',
             'city' => 'Douala',

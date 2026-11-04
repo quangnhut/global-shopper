@@ -22,8 +22,6 @@ return [
     'zone_description' => 'Quản lý vận chuyển, thanh toán và xử lý đơn hàng theo khu vực',
     'tax' => 'Thuế',
     'tax_description' => 'Quản lý cách cửa hàng tính thuế.',
-    'currency' => 'Tiền tệ',
-    'currency_description' => 'Bật tiền tệ và quản lý tỷ giá.',
     'sales' => 'Kênh bán hàng',
     'sales_description' => 'Quản lý các kênh trực tuyến và ngoại tuyến mà bạn bán sản phẩm.',
 

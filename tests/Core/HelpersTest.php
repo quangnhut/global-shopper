@@ -56,11 +56,11 @@ describe('shopper_setting', function (): void {
 });
 
 describe('shopper_currency', function (): void {
-    it('falls back to USD when default_currency_id is null', function (): void {
-        expect(shopper_currency())->toBe('USD');
+    it('falls back to VND when default_currency_id is null', function (): void {
+        expect(shopper_currency())->toBe('VND');
     });
 
-    it('falls back to USD when the currency row was deleted', function (): void {
+    it('falls back to VND when the currency row was deleted', function (): void {
         Setting::query()->create([
             'key' => 'default_currency_id',
             'value' => 9999,
@@ -68,11 +68,11 @@ describe('shopper_currency', function (): void {
             'locked' => true,
         ]);
 
-        expect(shopper_currency())->toBe('USD');
+        expect(shopper_currency())->toBe('VND');
     });
 
     it('caches the resolved currency code, not a Currency model', function (): void {
-        $currency = Currency::query()->where('code', 'EUR')->firstOrFail();
+        $currency = Currency::factory()->create(['code' => 'EUR']);
 
         Setting::query()->create([
             'key' => 'default_currency_id',

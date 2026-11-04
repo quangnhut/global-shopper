@@ -15,7 +15,7 @@ final class StoreSettingsSeeder extends Seeder
     public function run(): void
     {
         $country = Country::query()->where('cca2', 'US')->firstOrFail();
-        $currencies = Currency::query()->whereIn('code', ['USD', 'EUR', 'GBP'])->pluck('id', 'code');
+        $currencyId = Currency::query()->where('code', 'VND')->valueOrFail('id');
 
         $settings = [
             'name' => 'Shopper Demo Store',
@@ -28,8 +28,8 @@ final class StoreSettingsSeeder extends Seeder
             'city' => 'San Francisco',
             'state' => 'CA',
             'country_id' => $country->id,
-            'default_currency_id' => $currencies['USD'],
-            'currencies' => $currencies->values()->all(),
+            'default_currency_id' => $currencyId,
+            'currencies' => [$currencyId],
             'facebook_link' => null,
             'instagram_link' => null,
             'twitter_link' => null,

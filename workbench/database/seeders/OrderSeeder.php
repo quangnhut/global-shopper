@@ -26,9 +26,9 @@ final class OrderSeeder extends Seeder
     {
         $userModel = config('auth.providers.users.model');
         $customers = $userModel::query()->role(config('shopper.admin.roles.user'))->get();
-        $usd = Currency::query()->where('code', 'USD')->firstOrFail();
+        $currency = Currency::query()->where('code', 'VND')->firstOrFail();
         $products = resolve(ProductContract::class)::query()
-            ->with(['prices' => fn ($query) => $query->where('currency_id', $usd->id)])
+            ->with(['prices' => fn ($query) => $query->where('currency_id', $currency->id)])
             ->get();
         $channel = resolve(ChannelContract::class)::query()->where('is_default', true)->firstOrFail();
         $paymentMethod = PaymentMethod::query()->firstOrFail();
@@ -43,7 +43,7 @@ final class OrderSeeder extends Seeder
 
             $order = resolve(OrderContract::class)::query()->create([
                 'number' => 'ORD-'.mb_str_pad((string) $i, 6, '0', STR_PAD_LEFT),
-                'currency_code' => $usd->code,
+                'currency_code' => $currency->code,
                 'status' => $status,
                 'payment_status' => $paymentStatus,
                 'shipping_status' => $shippingStatus,

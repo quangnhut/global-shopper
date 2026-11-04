@@ -83,6 +83,30 @@ describe(ManagePricing::class, function (): void {
             ->and($currencies->first()->code)->toBe('USD');
     });
 
+    it('accepts VND prices above six digits and stores them in whole dong', function (): void {
+        setupCurrencies(['VND'], 'VND');
+
+        $product = Product::factory()->create();
+        $vnd = Currency::query()->where('code', 'VND')->first();
+
+        Livewire::test(ManagePricing::class, [
+            'modelId' => $product->id,
+            'modelType' => Product::class,
+        ])
+            ->fillForm([
+                $vnd->id => [
+                    'amount' => 49975000,
+                    'compare_amount' => 53725000,
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors()
+            ->assertDispatched('product.pricing.manage');
+
+        expect($product->refresh()->prices->first()->amount)->toBe(49975000)
+            ->and(shopper_money_format(49975000, 'VND'))->toContain('49,975,000');
+    });
+
     it('can save pricing for product', function (): void {
         $product = Product::factory()->create();
         $usdCurrency = Currency::query()->where('code', 'USD')->first();

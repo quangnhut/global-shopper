@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopper\Livewire\Components\Initialization;
 
-use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -12,7 +11,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -49,8 +47,6 @@ final class InitializationWizard extends Component implements HasActions, HasSch
         'name',
         'email',
         'country_id',
-        'currencies',
-        'default_currency_id',
         'street_address',
         'postal_code',
         'state',
@@ -67,15 +63,11 @@ final class InitializationWizard extends Component implements HasActions, HasSch
     #[Locked]
     public array $countryOptions = [];
 
-    #[Locked]
-    public array $currencyOptions = [];
-
     public function mount(): void
     {
         $this->authorizeOnboarding();
 
         $this->countryOptions = self::countryOptions();
-        $this->currencyOptions = self::currencyOptions();
 
         /** @var Collection<int, Setting> $settings */
         $settings = Setting::query()
@@ -83,8 +75,6 @@ final class InitializationWizard extends Component implements HasActions, HasSch
                 'name',
                 'email',
                 'country_id',
-                'default_currency_id',
-                'currencies',
                 'street_address',
                 'city',
                 'state',
@@ -138,44 +128,12 @@ final class InitializationWizard extends Component implements HasActions, HasSch
                                 ->options($this->countryOptions)
                                 ->searchable()
                                 ->native(false),
-                            Select::make('currencies')
-                                ->label(__('shopper::forms.label.currencies'))
-                                ->helperText(__('shopper::pages/onboarding.currencies_description'))
-                                ->options($this->currencyOptions)
-                                ->searchable()
-                                ->multiple()
-                                ->minItems(1)
-                                ->required()
-                                ->live()
-                                ->native(false),
-                            Select::make('default_currency_id')
-                                ->label(__('shopper::forms.label.default_currency'))
-                                ->helperText(__('shopper::pages/onboarding.currency_description'))
-                                ->placeholder(__('shopper::forms.placeholder.select_currencies'))
-                                ->options(
-                                    fn (Get $get): array => collect($this->currencyOptions)
-                                        ->only($get('currencies') ?? [])
-                                        ->all()
-                                )
-                                ->native(false)
-                                ->required()
-                                ->rules([
-                                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get): void {
-                                        $currencies = $get('currencies') ?? [];
-
-                                        if (filled($value) && ! in_array($value, $currencies, false)) {
-                                            $fail(__('shopper::pages/onboarding.default_currency_must_be_in_currencies'));
-                                        }
-                                    },
-                                ]),
                         ])
                         ->afterValidation(function (): void {
                             $this->persistStep([
                                 'name',
                                 'email',
                                 'country_id',
-                                'currencies',
-                                'default_currency_id',
                             ]);
                         }),
                     Wizard\Step::make(__('shopper::pages/onboarding.step_two_title'))
@@ -287,7 +245,13 @@ final class InitializationWizard extends Component implements HasActions, HasSch
         );
 
         DB::transaction(function () use ($state): void {
-            $this->saveSettings($state);
+            $vndId = (int) Currency::query()->where('code', 'VND')->valueOrFail('id');
+
+            $this->saveSettings([
+                ...$state,
+                'currencies' => [$vndId],
+                'default_currency_id' => $vndId,
+            ]);
 
             $this->createDefaultInventory($state);
         });
@@ -320,21 +284,6 @@ final class InitializationWizard extends Component implements HasActions, HasSch
                 ->sortBy('region')
                 ->groupBy('region')
                 ->map(fn ($region): array => $region->pluck('name', 'id')->toArray())
-                ->all()
-        );
-    }
-
-    /**
-     * @return array<int|string, string>
-     */
-    private static function currencyOptions(): array
-    {
-        return Cache::remember(
-            'shopper.onboarding.currency_options.'.app()->getLocale(),
-            now()->addDay(),
-            fn (): array => Currency::query()
-                ->orderBy('name')
-                ->pluck('name', 'id')
                 ->all()
         );
     }

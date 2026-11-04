@@ -6,7 +6,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Shopper\Core\Models\Country;
-use Shopper\Core\Models\Currency;
 use Shopper\Core\Models\Setting;
 use Shopper\Livewire\Pages\Settings\General;
 use Tests\Core\Stubs\User;
@@ -50,7 +49,6 @@ describe(General::class, function (): void {
         Storage::fake($disk);
 
         $country = Country::query()->firstOr(fn () => Country::factory()->create());
-        $currency = Currency::query()->firstOr(fn () => Currency::factory()->create());
 
         Livewire::test(General::class)
             ->fillForm([
@@ -61,8 +59,6 @@ describe(General::class, function (): void {
                 'city' => 'Douala',
                 'postal_code' => '00237',
                 'country_id' => $country->id,
-                'currencies' => [$currency->id],
-                'default_currency_id' => $currency->id,
                 'logo' => UploadedFile::fake()->image('logo.png'),
             ])
             ->call('store')

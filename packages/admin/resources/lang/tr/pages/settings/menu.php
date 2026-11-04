@@ -22,8 +22,6 @@ return [
     'zone_description' => 'Bölgeler arası kargo, ödeme ve yerine getirme yönetimi',
     'tax' => 'Vergiler',
     'tax_description' => 'Mağazanızın vergileri nasıl tahsil ettiğini yönetin.',
-    'currency' => 'Para Birimleri',
-    'currency_description' => 'Para birimlerini etkinleştirin ve döviz kurlarını yönetin.',
     'sales' => 'Satış kanalları',
     'sales_description' => 'Ürün sattığınız çevrimiçi ve çevrimdışı kanalları yönetin.',
 
