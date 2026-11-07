@@ -27,6 +27,7 @@ final class DatabaseSeeder extends Seeder
         $this->call(DiscountSeeder::class);
         $this->call(CmsSeeder::class);
         $this->call(SeoSeeder::class);
+        $this->call(HomepageSeeder::class);
 
         Model::reguard();
     }

@@ -24,6 +24,7 @@ vendor/bin/testbench storage:link --force > /dev/null 2>&1 || true
 # Publish Filament's JS/CSS and Shopper's images into the Testbench public folder.
 vendor/bin/testbench filament:assets > /dev/null 2>&1 || true
 vendor/bin/testbench vendor:publish --tag=shopper-cms-assets --force > /dev/null 2>&1 || true
+vendor/bin/testbench vendor:publish --tag=shopper-storefront-assets --force > /dev/null 2>&1 || true
 # Admin images (logo, favicons) are served from public/<admin prefix>, so follow SHOPPER_PREFIX.
 prefix=$(grep -E '^SHOPPER_PREFIX=' workbench/.env 2>/dev/null | tail -n1 | cut -d= -f2- | tr -d '"'"'"' \r')
 prefix=${prefix:-cpanel}

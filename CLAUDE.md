@@ -32,6 +32,9 @@ Each PHP package has its own service provider:
 Packages are split to separate repositories via the `monorepo-split.yml` workflow on push to `*.x` branches.
 
 There is also a `packages/cms` package (`Shopper\Cms\CmsServiceProvider`, WordPress-style posts/pages), built from the plans in `.claude/plans/`.
+`packages/storefront` (`Shopper\Storefront\StorefrontServiceProvider`, plan 09) is the customer-facing site: a home page
+with sections configured in the admin (Storefront → Homepage), header/footer settings, search, policy pages and customer
+sign-in, as a Blade theme plus `GET /api/storefront/home` and `/api/storefront/search`.
 
 ## Running the Project
 
@@ -74,6 +77,10 @@ npm install && npm run dev                    # only when changing admin CSS/JS 
   The prefix is `SHOPPER_PREFIX` in `workbench/.env` (default `cpanel`; `.env.testing` is only read by the tests).
   After changing it, `docker compose restart app` so the entrypoint links the admin images at the new prefix;
   open `/<prefix>/login` or `/<prefix>/dashboard` (the bare `/<prefix>` is shadowed by that image folder).
+- Storefront: http://localhost:8088/ (Vietnamese, `SHOPPER_STOREFRONT_ROUTES=true` in `workbench/.env`; language from
+  `SHOPPER_STOREFRONT_LOCALE`, default `vi`). Customers sign up at `/register`. Its CSS is
+  `packages/storefront/dist/storefront.css` (`npm run build:storefront`), published to the app by the entrypoint
+  (`vendor:publish --tag=shopper-storefront-assets`); after rebuilding it, run that command or restart the app.
 - The container entrypoint (`docker/php/entrypoint.sh`) runs on every start: `composer install` if needed,
   links `./uploads` into the skeleton's public disk, refreshes the skeleton `.env`, `package:discover`, `storage:link`, `filament:assets`, publishes TinyMCE
   (`vendor:publish --tag=shopper-cms-assets`), and links
@@ -119,8 +126,8 @@ docker compose exec -T app composer dump-autoload                     # after ad
 ### Building assets (release)
 
 - `npm run build` compiles Tailwind CSS and the esbuild bundles into `packages/admin/dist/shopper.{css,js}`, the
-  sidebar bundle, and the CMS editor (`packages/cms/dist/tiny-editor.js` + a trimmed copy of TinyMCE in
-  `packages/cms/dist/tinymce`). `dist/` is committed and is what installed apps serve, so rebuild and commit it whenever
+  sidebar bundle, the CMS editor (`packages/cms/dist/tiny-editor.js` + a trimmed copy of TinyMCE in
+  `packages/cms/dist/tinymce`) and the storefront CSS (`packages/storefront/dist/storefront.css`). `dist/` is committed and is what installed apps serve, so rebuild and commit it whenever
   `packages/*/resources/{css,js}` change. Never edit `dist/` by hand.
 - Before a release: `npm run build`, `composer test:lint`, `composer test:refactor`, PHPStan and the full Pest suite
   (all PHP commands inside Docker). Tags trigger `monorepo-split.yml`, which pushes each package to its own repository.
@@ -159,7 +166,8 @@ Shopper ships as Composer packages, so production means a host Laravel 11/12 app
    published and the trash is never emptied.
 6. On every deploy: `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`,
    `php artisan filament:assets`, `php artisan vendor:publish --tag=shopper-cms-assets --force` (TinyMCE, self-hosted
-   under the GPL with `license_key: 'gpl'`), `php artisan optimize`.
+   under the GPL with `license_key: 'gpl'`), `php artisan vendor:publish --tag=shopper-storefront-assets --force`
+   (storefront CSS), `php artisan optimize`.
 7. CMS content reaches the storefront through the JSON API (`GET /api/cms/resolve?path=…`, `GET /api/cms/posts`;
    set `SHOPPER_CMS_FRONTEND_URL` to the storefront's base URL). For server-rendered pages instead, set
    `SHOPPER_CMS_ROUTES=true` (fallback route + views publishable with `vendor:publish --tag=shopper-cms-views`).
@@ -171,7 +179,12 @@ Shopper ships as Composer packages, so production means a host Laravel 11/12 app
    The app serves `/sitemap.xml` and `/robots.txt` itself (`SHOPPER_SEO_ROUTES`): delete any static
    `public/robots.txt`. Storefront paths of products/categories/brands/collections are in `shopper.seo.paths`.
    With a real queue worker, `SHOPPER_SEO_SITEMAP_QUEUE=true` rebuilds sitemaps in the background after changes.
-9. Never use the demo seeders (`workbench/database/seeders`) or the demo admin credentials in production.
+9. Storefront (`packages/storefront`): `SHOPPER_STOREFRONT_ROUTES=true` serves the Blade site at `/` (home, `/search`,
+   `/policies/{slug}`, `/login`, `/register`, `/forgot-password`); headless sites use `GET /api/storefront/home`
+   and `GET /api/storefront/search?q=` instead. Admins with `manage_homepage` set it up under Storefront → Homepage
+   (sections, header & footer); the footer warns while legally required details (company, address, tax ID, phone,
+   email, Bộ Công Thương link) are empty. Customer reset-password emails need a working `MAIL_*` setup.
+10. Never use the demo seeders (`workbench/database/seeders`) or the demo admin credentials in production.
 
 ## Development Commands
 

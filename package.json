@@ -3,18 +3,20 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "npm-run-all --parallel dev:panel dev:sidebar dev:cms",
+    "dev": "npm-run-all --parallel dev:panel dev:sidebar dev:cms dev:storefront",
     "dev:panel": "npm-run-all --parallel dev:panel:css dev:panel:js",
     "dev:panel:css": "npx @tailwindcss/cli -i ./packages/admin/resources/css/shopper.css -o ./packages/admin/dist/shopper.css --watch",
     "dev:panel:js": "node scripts/build.js --dev --package=admin",
     "dev:sidebar": "node scripts/build.js --dev --package=sidebar",
     "dev:cms": "node scripts/build.js --dev --package=cms",
-    "build": "npm-run-all build:panel build:sidebar build:cms",
+    "dev:storefront": "npx @tailwindcss/cli -i ./packages/storefront/resources/css/storefront.css -o ./packages/storefront/dist/storefront.css --watch",
+    "build": "npm-run-all build:panel build:sidebar build:cms build:storefront",
     "build:panel": "npm-run-all --parallel build:panel:css build:panel:js",
     "build:panel:css": "npx @tailwindcss/cli -i ./packages/admin/resources/css/shopper.css -o ./packages/admin/dist/shopper.css --minify",
     "build:panel:js": "node scripts/build.js --package=admin",
     "build:sidebar": "node scripts/build.js --package=sidebar",
     "build:cms": "node scripts/build.js --package=cms",
+    "build:storefront": "npx @tailwindcss/cli -i ./packages/storefront/resources/css/storefront.css -o ./packages/storefront/dist/storefront.css --minify",
     "prettier": "npx prettier --write ./packages/admin/resources"
   },
   "devDependencies": {

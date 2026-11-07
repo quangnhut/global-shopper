@@ -18,6 +18,7 @@
             <directory>packages/admin/src</directory>
             <directory>packages/cms/src</directory>
             <directory>packages/seo/src</directory>
+            <directory>packages/storefront/src</directory>
             <directory>packages/core/src</directory>
         </include>
     </source>

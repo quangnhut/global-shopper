@@ -20,6 +20,7 @@ jobs:
           - seo
           - sidebar
           - shipping
+          - storefront
           - stripe
           - types
           - upgrade
@@ -40,6 +41,8 @@ jobs:
             repository: sidebar
           - package: shipping
             repository: shipping
+          - package: storefront
+            repository: storefront
           - package: stripe
             repository: stripe
           - package: types

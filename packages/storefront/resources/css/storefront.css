@@ -1,0 +1,158 @@
+@import 'tailwindcss' source(none);
+
+@source '../views';
+@source '../../src';
+@source '../../../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/tailwind.blade.php';
+
+/* Brand colour: override --color-brand-* in your own stylesheet to re-theme the storefront. */
+@theme {
+    --color-brand-50: #fef2f2;
+    --color-brand-100: #fee2e2;
+    --color-brand-300: #fca5a5;
+    --color-brand-500: #ef4444;
+    --color-brand-600: #d70018;
+    --color-brand-700: #b80015;
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    .sf-body {
+        @apply bg-gray-50 font-sans text-gray-900 antialiased;
+    }
+
+    .sf-container {
+        @apply mx-auto w-full max-w-7xl px-4 sm:px-6;
+    }
+
+    .sf-skip-link {
+        @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:shadow;
+    }
+
+    .sf-header {
+        @apply sticky top-0 z-30 shadow-sm;
+    }
+
+    .sf-section {
+        @apply rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 sm:p-5;
+    }
+
+    .sf-section--sale {
+        @apply bg-gradient-to-b from-brand-50 to-white ring-brand-100;
+    }
+
+    .sf-section--hot_deal {
+        @apply bg-gradient-to-r from-brand-600 to-orange-500 ring-0;
+    }
+
+    .sf-section--hot_deal .sf-section-title {
+        @apply text-white;
+    }
+
+    .sf-section-title {
+        @apply flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-gray-900 sm:text-xl;
+    }
+
+    .sf-section--sale .sf-section-title,
+    .sf-section--new .sf-section-title {
+        @apply text-brand-700;
+    }
+
+    .sf-countdown {
+        @apply inline-flex min-w-7 justify-center rounded-md bg-gray-900 px-1.5 py-0.5 font-mono text-sm text-white tabular-nums;
+    }
+
+    .sf-grid {
+        --sf-gap: 0.75rem;
+        display: grid;
+        gap: var(--sf-gap);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sf-carousel {
+        --sf-gap: 0.75rem;
+        --sf-visible: 2;
+        display: flex;
+        gap: var(--sf-gap);
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+    }
+
+    .sf-carousel::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sf-carousel-item {
+        flex: 0 0 calc((100% - (var(--sf-visible) - 1) * var(--sf-gap)) / var(--sf-visible));
+        scroll-snap-align: start;
+    }
+
+    @media (min-width: 640px) {
+        .sf-grid {
+            grid-template-columns: repeat(min(3, var(--sf-columns)), minmax(0, 1fr));
+        }
+
+        .sf-carousel {
+            --sf-visible: min(3, var(--sf-columns));
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .sf-grid {
+            --sf-gap: 1rem;
+            grid-template-columns: repeat(var(--sf-columns), minmax(0, 1fr));
+        }
+
+        .sf-carousel {
+            --sf-gap: 1rem;
+            --sf-visible: var(--sf-columns);
+        }
+    }
+
+    .sf-carousel-button {
+        @apply flex size-8 items-center justify-center rounded-full bg-white text-gray-700 shadow ring-1 ring-gray-200 hover:text-brand-700 disabled:opacity-40;
+    }
+
+    .sf-card {
+        @apply rounded-xl bg-white ring-1 ring-gray-100 transition hover:shadow-md hover:ring-gray-200;
+    }
+
+    .sf-button {
+        @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600;
+    }
+
+    .sf-input {
+        @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 aria-[invalid=true]:border-red-500;
+    }
+
+    .sf-prose {
+        @apply space-y-4 leading-relaxed text-gray-700;
+    }
+
+    .sf-prose h2 {
+        @apply mt-8 text-xl font-semibold text-gray-900;
+    }
+
+    .sf-prose h3 {
+        @apply mt-6 text-lg font-semibold text-gray-900;
+    }
+
+    .sf-prose a {
+        @apply text-brand-700 underline;
+    }
+
+    .sf-prose ul {
+        @apply list-disc space-y-1 pl-6;
+    }
+
+    .sf-prose ol {
+        @apply list-decimal space-y-1 pl-6;
+    }
+}

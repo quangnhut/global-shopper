@@ -1,0 +1,31 @@
+{
+  "name": "shopper/storefront",
+  "description": "Storefront for Shopper: a configurable home page (header, sections, footer), customer sign-in and its JSON API",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "shopper/cart": "*",
+    "shopper/cms": "*",
+    "shopper/core": "*",
+    "shopper/framework": "*",
+    "shopper/seo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Shopper\\Storefront\\": "src/",
+      "Shopper\\Storefront\\Database\\Factories\\": "database/factories/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Shopper\\Storefront\\StorefrontServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
