@@ -78,3 +78,27 @@ if (! function_exists('storefrontVnd')) {
         return Post::factory()->create($attributes);
     }
 }
+
+if (! function_exists('storefrontStock')) {
+    function storefrontStock(Illuminate\Database\Eloquent\Model $stockable, int $quantity): void
+    {
+        $inventory = Shopper\Core\Models\Inventory::query()->first() ?? Shopper\Core\Models\Inventory::factory()->create();
+
+        $stockable->mutateStock($inventory->id, $quantity);
+    }
+
+    /**
+     * Puts the cart's id in the session, as the storefront does after "add to cart".
+     */
+    function storefrontSessionCart(array $lines = []): Shopper\Cart\Models\Cart
+    {
+        $cart = Shopper\Cart\Models\Cart::query()->create(['currency_code' => 'VND']);
+        session()->put((string) config('shopper.cart.session.key', 'shopper_cart'), $cart->id);
+
+        foreach ($lines as [$purchasable, $quantity]) {
+            resolve(Shopper\Cart\CartManager::class)->add($cart, $purchasable, $quantity);
+        }
+
+        return $cart;
+    }
+}

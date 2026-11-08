@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'Cart',
+    'lines' => 'Items in your cart',
+    'empty' => 'Your cart is empty.',
+    'continue' => 'Continue shopping',
+    'summary' => 'Order summary',
+    'subtotal' => '{1} Subtotal (1 item)|[0,*] Subtotal (:count items)',
+    'discount' => 'Discount',
+    'tax' => 'Tax',
+    'total' => 'Total',
+    'checkout' => 'Checkout',
+    'quantity' => 'Quantity',
+    'quantity_for' => 'Quantity of :name',
+    'increase' => 'Increase quantity',
+    'decrease' => 'Decrease quantity',
+    'remove' => 'Remove :name from the cart',
+    'add' => 'Add to cart',
+    'adding' => 'Adding…',
+    'added' => 'Added to your cart.',
+    'added_capped' => 'Only enough stock to add :quantity.',
+    'view_cart' => 'View cart',
+    'choose_variant' => 'Choose an option for :name',
+    'choose' => 'Choose',
+    'close' => 'Close',
+    'out_of_stock' => 'Sold out',
+    'a_product' => 'A product',
+    'notices' => [
+        'removed' => ':name is no longer sold and was removed from your cart.',
+        'sold_out' => ':name is sold out and was removed from your cart.',
+        'capped' => 'Only :quantity of :name left, the quantity was adjusted.',
+        'price_changed' => 'The price of :name changed to :price.',
+    ],
+    'errors' => [
+        'unavailable' => 'This product cannot be bought right now.',
+        'out_of_stock' => ':name is sold out.',
+        'only_left' => 'Only :quantity left.',
+        'line_not_found' => 'This item is no longer in your cart.',
+        'completed' => 'This cart has already been ordered. Please reload the page.',
+        'generic' => 'Something went wrong, please try again.',
+    ],
+];

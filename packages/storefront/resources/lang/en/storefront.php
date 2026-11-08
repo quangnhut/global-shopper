@@ -29,6 +29,7 @@ return [
         'see_all' => 'See all :count results',
     ],
     'cart' => [
+        'count' => ', :count items',
         'title' => 'Cart',
         'label' => 'Cart, :count items',
         'empty' => 'Your cart is empty.',

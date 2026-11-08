@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Shopper\Cart\CartSessionManager;
+use Shopper\Storefront\Actions\MergeCartOnLoginAction;
 use Shopper\Storefront\Support\StorefrontCache;
 
 final class LoginController
@@ -28,7 +28,7 @@ final class LoginController
         return view('shopper-storefront::auth.login', StorefrontCache::layout());
     }
 
-    public function store(Request $request, CartSessionManager $carts): RedirectResponse
+    public function store(Request $request, MergeCartOnLoginAction $mergeCart): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email', 'max:255'],
@@ -52,9 +52,7 @@ final class LoginController
         RateLimiter::clear($key);
         $request->session()->regenerate();
 
-        if ($carts->current() !== null) {
-            $carts->associate(Auth::guard(self::guard())->user());
-        }
+        $mergeCart->execute(Auth::guard(self::guard())->user());
 
         return redirect()->intended(route('shopper.storefront.home'));
     }

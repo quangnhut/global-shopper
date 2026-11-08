@@ -128,6 +128,22 @@
         @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600;
     }
 
+    .sf-button-secondary {
+        @apply inline-flex items-center justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600;
+    }
+
+    .sf-qty {
+        @apply inline-flex items-center rounded-lg ring-1 ring-gray-300;
+    }
+
+    .sf-qty button {
+        @apply flex size-9 items-center justify-center text-gray-600 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40;
+    }
+
+    .sf-qty input {
+        @apply h-9 w-12 border-x border-gray-300 text-center text-sm [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none;
+    }
+
     .sf-input {
         @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 aria-[invalid=true]:border-red-500;
     }

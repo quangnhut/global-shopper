@@ -45,5 +45,31 @@
                 </p>
             @endif
         </div>
+        @if (\Illuminate\Support\Facades\Route::has('shopper.storefront.cart.lines.store'))
+            <form
+                method="POST"
+                action="{{ route('shopper.storefront.cart.lines.store') }}"
+                class="relative z-10 mt-2"
+                x-data="sfAddToCart"
+                x-on:submit.prevent="submit"
+            >
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}" />
+                <button
+                    type="submit"
+                    class="flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand-50 px-2 py-2 text-sm font-semibold text-brand-700 ring-1 ring-brand-100 hover:bg-brand-600 hover:text-white disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 disabled:ring-gray-200"
+                    x-bind:disabled="busy"
+                    @disabled(! $product->inStock)
+                    aria-label="{{ $product->inStock ? __('shopper-storefront::cart.add').': '.$product->name : __('shopper-storefront::cart.out_of_stock').': '.$product->name }}"
+                >
+                    <x-shopper-storefront::icon name="cart" class="size-4" />
+                    @if ($product->inStock)
+                        <span x-text="busy ? @js(__('shopper-storefront::cart.adding')) : @js(__('shopper-storefront::cart.add'))">{{ __('shopper-storefront::cart.add') }}</span>
+                    @else
+                        <span>{{ __('shopper-storefront::cart.out_of_stock') }}</span>
+                    @endif
+                </button>
+            </form>
+        @endif
     </div>
 </article>

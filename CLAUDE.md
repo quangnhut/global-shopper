@@ -34,7 +34,10 @@ Packages are split to separate repositories via the `monorepo-split.yml` workflo
 There is also a `packages/cms` package (`Shopper\Cms\CmsServiceProvider`, WordPress-style posts/pages), built from the plans in `.claude/plans/`.
 `packages/storefront` (`Shopper\Storefront\StorefrontServiceProvider`, plan 09) is the customer-facing site: a home page
 with sections configured in the admin (Storefront → Homepage), header/footer settings, search, policy pages and customer
-sign-in, as a Blade theme plus `GET /api/storefront/home` and `/api/storefront/search`.
+sign-in, as a Blade theme plus `GET /api/storefront/home` and `/api/storefront/search`. Plan 10 added the cart
+(`/cart`), checkout (`/checkout`, pickup at the office only, no shipping) and order confirmation pages, the cart/checkout
+JSON API (`/api/storefront/cart…`, `X-Cart-Token` header) and Telegram order alerts. `packages/onepay`
+(`Shopper\OnePay\OnePayServiceProvider`) is the OnePay domestic-card payment driver used at checkout.
 
 ## Running the Project
 
@@ -91,6 +94,13 @@ npm install && npm run dev                    # only when changing admin CSS/JS 
 - The host `vendor/` is only a copy for the IDE, host Pint and `npm run build` (which imports from it). After Composer changes
   refresh it with `docker compose run --rm --no-deps -v .:/host --entrypoint sh app -c 'cp -a vendor/. /host/vendor/'`
   (about 3 minutes). `docker compose cp` stops at the first symlink on Windows and leaves a partial copy.
+- Telegram order alerts read `workbench/telegram.json` (gitignored, copy `workbench/telegram.example.json`; path in
+  `SHOPPER_TELEGRAM_CONFIG`). Without the file, or with `"enabled": false`, no message is sent and orders still go
+  through. Check a bot with `docker compose exec -T app vendor/bin/testbench shopper:storefront:telegram-test`.
+- `ONEPAY_SANDBOX=true` in `workbench/.env` uses OnePay's public test merchant (`TESTONEPAY`): the redirect and the
+  cancel/return flow work, but its sandbox lists no banks, so a paid order cannot be simulated without the
+  sandbox account from the OnePay contract. The IPN cannot reach localhost.
+- After editing `workbench/.env`, `docker compose restart app`: the entrypoint copies it into the skeleton app.
 - Admin uploads are stored in `./uploads` on the host and served at `/storage/uploads/YYYY/MM/...`.
 - Scheduled CMS commands (`shopper:cms:publish-scheduled`, `shopper:cms:empty-trash`) do not run automatically
   in dev; call them with `docker compose exec -T app vendor/bin/testbench <command>`.
@@ -147,6 +157,8 @@ docker compose --env-file .env.production exec app vendor/bin/testbench shopper:
   deployment, install Shopper in a real Laravel app (next section).
 - Sessions, cache and logs live in the container and are lost when it is recreated; uploads and MySQL are in named volumes.
 - The built-in server does not compress responses, so enable gzip or Brotli in the reverse proxy for JS and CSS.
+- Create `./telegram.json` next to `docker-compose.yml` before `up` (copy `workbench/telegram.example.json`; set
+  `"enabled": false` to turn alerts off). It is mounted read-only and never baked into the image.
 
 ### Production (installing Shopper in a real Laravel app)
 
@@ -184,7 +196,15 @@ Shopper ships as Composer packages, so production means a host Laravel 11/12 app
    and `GET /api/storefront/search?q=` instead. Admins with `manage_homepage` set it up under Storefront → Homepage
    (sections, header & footer); the footer warns while legally required details (company, address, tax ID, phone,
    email, Bộ Công Thương link) are empty. Customer reset-password emails need a working `MAIL_*` setup.
-10. Never use the demo seeders (`workbench/database/seeders`) or the demo admin credentials in production.
+10. Cart and checkout (plan 10): no shipping, orders are collected at the office (Settings → General address).
+    Payment methods are the `payment_methods` rows with slugs `office`, `bank-transfer` and `onepay`
+    (`shopper.storefront.checkout.payment_methods`). Fill the bank account (BIN, number, holder) under Storefront →
+    Header & footer → Checkout so the confirmation page shows a VietQR code. OnePay needs `ONEPAY_MERCHANT_ID`,
+    `ONEPAY_ACCESS_CODE`, `ONEPAY_HASH_SECRET`, `ONEPAY_QUERY_USER`, `ONEPAY_QUERY_PASSWORD` and the IPN URL
+    `{APP_URL}/api/onepay/ipn` registered with OnePay; it is hidden at checkout until they are set. Telegram alerts
+    read the JSON file at `SHOPPER_TELEGRAM_CONFIG` (keep it out of git); with a queue worker they are sent in the
+    background, otherwise inline (failures are only logged).
+11. Never use the demo seeders (`workbench/database/seeders`) or the demo admin credentials in production.
 
 ## Development Commands
 

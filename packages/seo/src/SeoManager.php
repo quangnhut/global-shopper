@@ -278,7 +278,9 @@ final class SeoManager
                 '%title% %sep% %sitename%',
                 null,
                 (($context['archive'] ?? null) === 'date' && $indexing['noindex_date_archives'])
-                    || (($context['archive'] ?? null) === 'author' && $indexing['noindex_author_archives']),
+                    || (($context['archive'] ?? null) === 'author' && $indexing['noindex_author_archives'])
+                    // Private pages (cart, checkout, order confirmation) ask for it.
+                    || (bool) ($context['noindex'] ?? false),
             ],
         };
 

@@ -6,6 +6,7 @@ namespace Shopper\Payment;
 
 use Closure;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
 use Shopper\Core\Models\Order;
 use Shopper\Core\Models\PaymentMethod;
 use Shopper\Payment\Facades\Payment;
@@ -23,7 +24,14 @@ final class PaymentServiceProvider extends ServiceProvider
 
         $this->app->bind(
             'shopper.payment.logo',
-            fn (): Closure => fn (PaymentMethod $method): ?string => Payment::driver($method->driver ?? 'manual')->logo()
+            fn (): Closure => function (PaymentMethod $method): ?string {
+                try {
+                    return Payment::driver($method->driver ?? 'manual')->logo();
+                } catch (InvalidArgumentException) {
+                    // A method whose driver package is not installed has no logo instead of breaking the page.
+                    return null;
+                }
+            }
         );
     }
 

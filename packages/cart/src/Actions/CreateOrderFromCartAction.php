@@ -7,6 +7,7 @@ namespace Shopper\Cart\Actions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Shopper\Cart\CartManager;
+use Shopper\Cart\Data\OrderDetails;
 use Shopper\Cart\Events\CartCompleted;
 use Shopper\Cart\Exceptions\CartCompletedException;
 use Shopper\Cart\Exceptions\DiscountLimitReachedException;
@@ -31,9 +32,9 @@ final readonly class CreateOrderFromCartAction
         private StockReserver $stockReserver,
     ) {}
 
-    public function execute(Cart $cart): Order
+    public function execute(Cart $cart, ?OrderDetails $details = null): Order
     {
-        return DB::transaction(function () use ($cart): Order {
+        return DB::transaction(function () use ($cart, $details): Order {
             /** @var Cart $cart */
             $cart = Cart::query()->lockForUpdate()->findOrFail($cart->id);
 
@@ -63,6 +64,7 @@ final readonly class CreateOrderFromCartAction
                 'discount_type' => $discount?->type->value,
                 'discount_value_at_apply' => $discount?->value,
                 'discount_currency_code' => $discount !== null ? $cart->currency_code : null,
+                ...($details?->toOrderAttributes() ?? []),
             ]);
 
             $cart->lines->loadMorph('purchasable', [

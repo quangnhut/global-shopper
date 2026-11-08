@@ -28,11 +28,18 @@
                 </div>
             @endif
 
+            @if ($errors->has('cart'))
+                <div class="sf-container mt-4">
+                    <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200" role="alert">{{ $errors->first('cart') }}</p>
+                </div>
+            @endif
+
             @yield('content')
         </main>
 
         @include('shopper-storefront::partials.footer', ['footer' => $footer])
 
+        @includeWhen(\Illuminate\Support\Facades\Route::has('shopper.storefront.cart.lines.store'), 'shopper-storefront::partials.cart-scripts')
         @livewireScripts
         <x-shopper-seo::body-close />
     </body>

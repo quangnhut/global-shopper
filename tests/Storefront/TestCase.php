@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Storefront;
 
+use Shopper\OnePay\OnePayServiceProvider;
 use Shopper\Storefront\StorefrontServiceProvider;
 
 /**
@@ -15,6 +16,7 @@ abstract class TestCase extends \Tests\Cms\TestCase
     {
         return [
             ...parent::getPackageProviders($app),
+            OnePayServiceProvider::class,
             StorefrontServiceProvider::class,
         ];
     }

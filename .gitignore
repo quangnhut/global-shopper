@@ -30,6 +30,8 @@ Thumbs.db
 *.pem
 *.key
 auth.json
+# Telegram bot settings differ per environment (see workbench/telegram.example.json)
+telegram.json
 
 # Local databases (the root `shopper` file is a stray SQLite database with demo data)
 /shopper

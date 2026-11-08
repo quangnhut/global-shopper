@@ -74,6 +74,9 @@ class HeaderFooterSettings extends AbstractPageComponent implements HasActions, 
                         Tabs\Tab::make(__('shopper-storefront::admin.settings.badges_partners'))
                             ->icon('untitledui-check-verified-02')
                             ->schema($this->badgeAndPartnerFields()),
+                        Tabs\Tab::make(__('shopper-storefront::admin.settings.checkout'))
+                            ->icon('untitledui-credit-card-02')
+                            ->schema($this->checkoutFields()),
                     ]),
             ]);
     }
@@ -153,6 +156,47 @@ class HeaderFooterSettings extends AbstractPageComponent implements HasActions, 
                     ->searchable()
                     ->options(fn (): array => Category::query()->enabled()->whereNull('parent_id')->orderBy('position')->pluck('name', 'id')->all()),
             ]),
+        ];
+    }
+
+    /**
+     * Bank account of the "online pay" method (VietQR transfer) and pickup instructions.
+     *
+     * @return array<int, \Filament\Schemas\Components\Component>
+     */
+    private function checkoutFields(): array
+    {
+        return [
+            Section::make(__('shopper-storefront::admin.settings.bank'))
+                ->description(__('shopper-storefront::admin.settings.bank_help'))
+                ->compact()
+                ->schema([
+                    Grid::make()->schema([
+                        TextInput::make('bank_name')
+                            ->label(__('shopper-storefront::admin.settings.bank_name'))
+                            ->placeholder('Vietcombank')
+                            ->maxLength(100),
+                        TextInput::make('bank_bin')
+                            ->label(__('shopper-storefront::admin.settings.bank_bin'))
+                            ->helperText(__('shopper-storefront::admin.settings.bank_bin_help'))
+                            ->placeholder('970436')
+                            ->regex('/^\d{6}$/')
+                            ->maxLength(6),
+                        TextInput::make('bank_account_number')
+                            ->label(__('shopper-storefront::admin.settings.bank_account_number'))
+                            ->regex('/^[\d\s]{4,30}$/')
+                            ->maxLength(30),
+                        TextInput::make('bank_account_name')
+                            ->label(__('shopper-storefront::admin.settings.bank_account_name'))
+                            ->helperText(__('shopper-storefront::admin.settings.bank_account_name_help'))
+                            ->maxLength(100),
+                    ]),
+                ]),
+            Textarea::make('pickup_note')
+                ->label(__('shopper-storefront::admin.settings.pickup_note'))
+                ->helperText(__('shopper-storefront::admin.settings.pickup_note_help'))
+                ->rows(3)
+                ->maxLength(500),
         ];
     }
 

@@ -16,6 +16,7 @@ jobs:
           - cart
           - cms
           - core
+          - onepay
           - payment
           - seo
           - sidebar
@@ -33,6 +34,8 @@ jobs:
             repository: cms
           - package: core
             repository: core
+          - package: onepay
+            repository: onepay
           - package: payment
             repository: payment
           - package: seo

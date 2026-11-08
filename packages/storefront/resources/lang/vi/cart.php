@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'Giỏ hàng',
+    'lines' => 'Sản phẩm trong giỏ',
+    'empty' => 'Giỏ hàng của bạn đang trống.',
+    'continue' => 'Tiếp tục mua sắm',
+    'summary' => 'Tóm tắt đơn hàng',
+    'subtotal' => '{1} Tạm tính (1 sản phẩm)|[0,*] Tạm tính (:count sản phẩm)',
+    'discount' => 'Giảm giá',
+    'tax' => 'Thuế',
+    'total' => 'Tổng cộng',
+    'checkout' => 'Thanh toán',
+    'quantity' => 'Số lượng',
+    'quantity_for' => 'Số lượng :name',
+    'increase' => 'Tăng số lượng',
+    'decrease' => 'Giảm số lượng',
+    'remove' => 'Xóa :name khỏi giỏ hàng',
+    'add' => 'Thêm vào giỏ',
+    'adding' => 'Đang thêm…',
+    'added' => 'Đã thêm vào giỏ hàng.',
+    'added_capped' => 'Chỉ còn đủ hàng để thêm :quantity sản phẩm.',
+    'view_cart' => 'Xem giỏ hàng',
+    'choose_variant' => 'Chọn phiên bản cho :name',
+    'choose' => 'Chọn',
+    'close' => 'Đóng',
+    'out_of_stock' => 'Hết hàng',
+    'a_product' => 'Một sản phẩm',
+    'notices' => [
+        'removed' => ':name không còn bán và đã được xóa khỏi giỏ hàng.',
+        'sold_out' => ':name đã hết hàng và đã được xóa khỏi giỏ hàng.',
+        'capped' => ':name chỉ còn :quantity sản phẩm, số lượng đã được điều chỉnh.',
+        'price_changed' => 'Giá của :name đã thay đổi thành :price.',
+    ],
+    'errors' => [
+        'unavailable' => 'Sản phẩm này hiện không thể mua.',
+        'out_of_stock' => ':name đã hết hàng.',
+        'only_left' => 'Chỉ còn :quantity sản phẩm.',
+        'line_not_found' => 'Sản phẩm này không còn trong giỏ hàng.',
+        'completed' => 'Giỏ hàng này đã được đặt hàng. Vui lòng tải lại trang.',
+        'generic' => 'Đã có lỗi xảy ra, vui lòng thử lại.',
+    ],
+];

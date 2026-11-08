@@ -8,6 +8,13 @@ x-app: &app
   restart: unless-stopped
   volumes:
     - ./.env.production:/var/www/html/workbench/.env:ro
+    # Telegram order alerts (create it from workbench/telegram.example.json; `"enabled": false` turns them off).
+    - type: bind
+      source: ./telegram.json
+      target: /var/www/html/workbench/telegram.json
+      read_only: true
+      bind:
+        create_host_path: false
     - uploads:/var/www/html/vendor/orchestra/testbench-core/laravel/storage/app/public/uploads
 
 services:

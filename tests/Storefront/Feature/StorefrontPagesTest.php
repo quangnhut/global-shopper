@@ -133,7 +133,7 @@ describe('mini cart', function (): void {
 
         Livewire::test(MiniCart::class)
             ->assertSee('Tai nghe')
-            ->assertSee(__('shopper-storefront::storefront.cart.label', ['count' => 2]))
+            ->assertSee(__('shopper-storefront::storefront.cart.count', ['count' => 2]))
             ->assertSee(shopper_money_format(3_000_000, 'VND'));
     });
 });

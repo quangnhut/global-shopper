@@ -29,6 +29,7 @@ return [
         'see_all' => 'Xem tất cả :count kết quả',
     ],
     'cart' => [
+        'count' => ', :count sản phẩm',
         'title' => 'Giỏ hàng',
         'label' => 'Giỏ hàng, :count sản phẩm',
         'empty' => 'Giỏ hàng của bạn đang trống.',

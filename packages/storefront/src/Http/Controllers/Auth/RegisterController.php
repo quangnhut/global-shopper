@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
-use Shopper\Cart\CartSessionManager;
+use Shopper\Storefront\Actions\MergeCartOnLoginAction;
 use Shopper\Storefront\Support\StorefrontCache;
 
 /**
@@ -25,7 +25,7 @@ final class RegisterController
         return view('shopper-storefront::auth.register', StorefrontCache::layout());
     }
 
-    public function store(Request $request, CartSessionManager $carts): RedirectResponse
+    public function store(Request $request, MergeCartOnLoginAction $mergeCart): RedirectResponse
     {
         $userModel = (string) config('auth.providers.users.model');
 
@@ -52,9 +52,7 @@ final class RegisterController
         Auth::guard(LoginController::guard())->login($user);
         $request->session()->regenerate();
 
-        if ($carts->current() !== null) {
-            $carts->associate($user);
-        }
+        $mergeCart->execute($user);
 
         return redirect()
             ->route('shopper.storefront.home')

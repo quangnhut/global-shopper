@@ -1,0 +1,7 @@
+{
+    "enabled": false,
+    "bot_token": "123456789:replace-with-the-token-from-BotFather",
+    "chat_ids": ["-1001234567890"],
+    "message_thread_id": null,
+    "admin_order_url": "http://localhost:8088/nqn0710/orders/{id}/detail"
+}

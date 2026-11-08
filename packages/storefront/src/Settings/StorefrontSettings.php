@@ -41,6 +41,12 @@ final class StorefrontSettings
         'carrier_ids' => [],
         'payment_method_ids' => [],
         'extra_partners' => [],
+        // Checkout: bank account of the "online pay" (VietQR transfer) method, pickup instructions
+        'bank_bin' => null,
+        'bank_name' => null,
+        'bank_account_number' => null,
+        'bank_account_name' => null,
+        'pickup_note' => null,
     ];
 
     /**
@@ -115,6 +121,23 @@ final class StorefrontSettings
     {
         Cache::forget(self::CACHE_KEY);
         $this->values = null;
+    }
+
+    /**
+     * The account customers transfer to, when every part of it is filled in.
+     *
+     * @return array{bin: string, bank: string, number: string, name: string}|null
+     */
+    public function bankAccount(): ?array
+    {
+        $account = [
+            'bin' => preg_replace('/\D/', '', (string) $this->get('bank_bin')) ?? '',
+            'bank' => mb_trim((string) $this->get('bank_name')),
+            'number' => preg_replace('/\s/', '', (string) $this->get('bank_account_number')) ?? '',
+            'name' => mb_trim((string) $this->get('bank_account_name')),
+        ];
+
+        return in_array('', $account, true) ? null : $account;
     }
 
     public function companyName(): ?string

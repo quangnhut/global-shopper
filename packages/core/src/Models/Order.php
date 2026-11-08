@@ -305,6 +305,7 @@ class Order extends Model implements OrderContract
             'shipping_status' => ShippingStatus::class,
             'cancelled_at' => 'datetime',
             'archived_at' => 'datetime',
+            'metadata' => 'array',
         ];
     }
 }

@@ -75,6 +75,7 @@ return [
         'register' => '/register',
         'password_request' => '/forgot-password',
         'cart' => '/cart',
+        'checkout' => '/checkout',
     ],
 
     /*
@@ -107,6 +108,41 @@ return [
         'enabled' => true,
         'prefix' => 'api',
         'middleware' => ['api', 'throttle:120,1'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Checkout
+    |--------------------------------------------------------------------------
+    |
+    | Payment methods offered at checkout: kind => `payment_methods.slug`. Only
+    | enabled methods are shown, and OnePay only when its driver is configured.
+    | There is no shipping: customers collect their order at the office.
+    |
+    */
+
+    'checkout' => [
+        'payment_methods' => [
+            'office' => 'office',
+            'bank_transfer' => 'bank-transfer',
+            'onepay' => 'onepay',
+        ],
+        'note_max_length' => 1000,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Telegram order alerts
+    |--------------------------------------------------------------------------
+    |
+    | A JSON file (not in git) with `enabled`, `bot_token`, `chat_ids`,
+    | `message_thread_id` and `admin_order_url`. See workbench/telegram.example.json.
+    | Without the file no message is sent and orders are still placed.
+    |
+    */
+
+    'telegram' => [
+        'config_path' => env('SHOPPER_TELEGRAM_CONFIG', base_path('telegram.json')),
     ],
 
 ];

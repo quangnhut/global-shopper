@@ -1,0 +1,26 @@
+{
+  "name": "shopper/onepay",
+  "description": "OnePay (Vietnam domestic ATM/Napas cards) payment driver for Shopper",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "shopper/payment": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Shopper\\OnePay\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Shopper\\OnePay\\OnePayServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

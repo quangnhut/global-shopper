@@ -1,6 +1,6 @@
 # 10: Cart and checkout pages (no shipping, three payment methods, Telegram order alerts)
 
-Status: Not started
+Status: Done, except a paid OnePay sandbox payment (needs the contract's sandbox account) and the optional customer email; see log
 Depends on: 09 (storefront package, customer sign-in, header mini cart). VND is the only currency (2026-11-05).
 
 ## Goal
@@ -18,8 +18,8 @@ Let a customer put products in a cart, review it, and place an order from the st
 - **Payment methods** (only these three):
   1. **Pay at the office** (`office`): pay cash or card when collecting.
   2. **Online pay** (`bank_transfer`): bank transfer with a VietQR code and the order number as the transfer note
-     (see Open decisions: this reading must be confirmed).
-  3. **OnePay** (`onepay`): redirect to the OnePay gateway (Vietnamese ATM/domestic cards and international cards),
+     (confirmed by the user 2026-11-08).
+  3. **OnePay** (`onepay`): redirect to the OnePay **domestic** gateway (ATM/Napas cards only, decided 2026-11-08),
      back to the shop on return, confirmed by OnePay's IPN call.
 
 Out of scope: customer profile and order history (later plan), shipping, coupons UI (the cart supports coupons,
@@ -173,46 +173,46 @@ Placing the order (`PlaceOrderAction`, in `packages/storefront`):
 
 ### Phase 1: Telegram notifier and config file
 
-- [ ] `config/storefront.php`: `telegram.config_path`; `workbench/.env(.example)`, `.env.production.example`:
+- [x] `config/storefront.php`: `telegram.config_path`; `workbench/.env(.example)`, `.env.production.example`:
       `SHOPPER_TELEGRAM_CONFIG`; `workbench/telegram.example.json`; `.gitignore` `telegram.json`;
       `docker-compose.yml` read-only mount; CLAUDE.md section.
-- [ ] `TelegramConfig` (reads and validates the file once per request; `isEnabled()`, `botToken()`, `chatIds()`).
-- [ ] `TelegramClient` (`sendMessage(string $chatId, string $html)`, timeout, throws on non-2xx without the token
+- [x] `TelegramConfig` (reads and validates the file once per request; `isEnabled()`, `botToken()`, `chatIds()`).
+- [x] `TelegramClient` (`sendMessage(string $chatId, string $html)`, timeout, throws on non-2xx without the token
       in the message).
-- [ ] `OrderTelegramMessage` (builds the text above from an `Order`, escapes, truncates) and
+- [x] `OrderTelegramMessage` (builds the text above from an `Order`, escapes, truncates) and
       `SendTelegramOrderMessage` job (`new`, `paid`, `payment_failed` variants).
-- [ ] Console command `shopper:storefront:telegram-test` to send a test message (checks the file on a server).
-- [ ] Tests: missing/invalid/disabled file → no request and a log warning; `Http::fake` asserts URL, chat id,
+- [x] Console command `shopper:storefront:telegram-test` to send a test message (checks the file on a server).
+- [x] Tests: missing/invalid/disabled file → no request and a log warning; `Http::fake` asserts URL, chat id,
       escaped HTML (name `<b>x</b>` is escaped), truncation; token absent from exception messages; the job never
       throws out of a sync queue.
 
 ### Phase 2: Add to cart and cart page
 
-- [ ] `AddToCartAction` (creates the session cart on first add, `CartManager::add`, merges same product into one line,
+- [x] `AddToCartAction` (creates the session cart on first add, `CartManager::add`, merges same product into one line,
       caps at stock) and `UpdateCartLineAction` / `RemoveCartLineAction` (check the line belongs to the session cart).
-- [ ] "Thêm vào giỏ" button on `product-card` (Livewire `AddToCartButton`, lazy, shows a toast and updates the
+- [x] "Thêm vào giỏ" button on `product-card` (Livewire `AddToCartButton`, lazy, shows a toast and updates the
       `MiniCart` through a `cart-updated` event). Products with variants open a small variant picker (dialog with
       Alpine trap, keyboard accessible); out-of-stock products show a disabled "Hết hàng".
-- [ ] `CartPage` Livewire page at `/cart` (layout from plan 09, `noindex` SEO).
-- [ ] `MiniCart`: dropdown with the last lines, total and links to cart and checkout.
-- [ ] Attach the guest cart to the customer on login/register (`associate()`); if the customer already had an open
+- [x] `CartPage` Livewire page at `/cart` (layout from plan 09, `noindex` SEO).
+- [x] `MiniCart`: dropdown with the last lines, total and links to cart and checkout.
+- [x] Attach the guest cart to the customer on login/register (`associate()`); if the customer already had an open
       cart, merge lines.
-- [ ] Tests: add simple product, add variant, add beyond stock is capped with a message, update/remove someone
+- [x] Tests: add simple product, add variant, add beyond stock is capped with a message, update/remove someone
       else's line → 404, unpublished product cannot be added, merge on login, mini cart count updates,
       prices shown come from the database.
 
 ### Phase 3: Checkout page and placing the order
 
-- [ ] `OrderDetails` data object and the optional argument on `CreateOrderFromCartAction` (sets
+- [x] `OrderDetails` data object and the optional argument on `CreateOrderFromCartAction` (sets
       `payment_method_id`, `notes`, `metadata`, billing `OrderAddress`); keep existing callers and tests working.
-- [ ] `CheckoutPage` Livewire page at `/checkout` with the form, editable quantities, payment method choice
+- [x] `CheckoutPage` Livewire page at `/checkout` with the form, editable quantities, payment method choice
       (only enabled methods among `office`, `bank_transfer`, `onepay`), pickup box, terms checkbox.
-- [ ] `PlaceOrderAction` (steps above), rate limiting, double-submit handling.
-- [ ] Thank-you page per payment method (office instructions, VietQR + bank details, OnePay status), access rule.
-- [ ] Payment methods migration/seeder for the three methods; disable the others; `HomepageSeeder`-style demo data.
+- [x] `PlaceOrderAction` (steps above), rate limiting, double-submit handling.
+- [x] Thank-you page per payment method (office instructions, VietQR + bank details, OnePay status), access rule.
+- [x] Payment methods migration/seeder for the three methods; disable the others; `HomepageSeeder`-style demo data.
 - [ ] Telegram job dispatched after commit; customer gets Laravel's default mail only if `MAIL_*` is set (optional,
       behind a config flag, off by default).
-- [ ] Tests: happy path per method (order row, items, `payment_method_id`, `notes`, metadata contact,
+- [x] Tests: happy path per method (order row, items, `payment_method_id`, `notes`, metadata contact,
       `shipping_status` Unfulfilled, no shipping option, cart completed and forgotten, stock reserved,
       Telegram job pushed); validation (phone format, missing name, disabled method, non-allowed method id);
       price tampering impossible (quantities only); stock ran out between cart and submit; double submit makes
@@ -220,30 +220,29 @@ Placing the order (`PlaceOrderAction`, in `packages/storefront`):
 
 ### Phase 4: OnePay driver package
 
-- [ ] `packages/onepay` skeleton (`shopper-package` skill): config under `shopper.payment.drivers.onepay`,
+- [x] `packages/onepay` skeleton (`shopper-package` skill): config under `shopper.payment.drivers.onepay`,
       `OnePayDriver` implementing `PaymentDriver` (`initiatePayment` builds the signed URL, `retrievePayment` uses
       `QueryDR`, `handleWebhook` verifies the IPN, `supportsRefunds` false for now), `OnePaySigner`
       (hash building and checking, constant-time compare), response-code translations.
-- [ ] Routes: storefront return route, `/api/onepay/ipn` (CSRF-exempt, throttled, no session).
-- [ ] Domestic vs international endpoint choice on the checkout (two radio options under OnePay, or one; see
-      Open decisions).
-- [ ] Telegram "paid" / "failed" message from the IPN handler.
-- [ ] "Pay again" on the thank-you page for unpaid OnePay orders (new `vpc_MerchTxnRef` each attempt).
-- [ ] Tests: signature matches OnePay's documented sample, tampered hash rejected, amount mismatch rejected,
+- [x] Routes: storefront return route, `/api/onepay/ipn` (CSRF-exempt, throttled, no session).
+- [x] Domestic endpoint only (decided 2026-11-08); the international endpoint is not built.
+- [x] Telegram "paid" / "failed" message from the IPN handler.
+- [x] "Pay again" on the thank-you page for unpaid OnePay orders (new `vpc_MerchTxnRef` each attempt).
+- [x] Tests: signature matches OnePay's documented sample, tampered hash rejected, amount mismatch rejected,
       IPN idempotent, IPN for unknown reference, return URL alone does not mark paid, `QueryDR` fallback
       (`Http::fake`), response codes mapped, credentials missing → method hidden at checkout.
 - [ ] Manual test against the OnePay sandbox (test cards from OnePay's docs), recorded in the progress log.
 
 ### Phase 5: JSON API, admin touches, checks
 
-- [ ] JSON API endpoints listed above. Headless carts use a `X-Cart-Token` header (a random token stored in
+- [x] JSON API endpoints listed above. Headless carts use a `X-Cart-Token` header (a random token stored in
       `carts.metadata.token`), never the numeric id. Same actions as the pages.
-- [ ] Admin: bank account fields for `bank_transfer`; order screen shows the contact block and "Pickup at office";
+- [x] Admin: bank account fields for `bank_transfer`; order screen shows the contact block and "Pickup at office";
       orders list filter by payment method works with the three methods (check, likely no change).
 - [ ] Browser checks desktop + mobile: add to cart, change quantities on cart and checkout, each payment method,
       OnePay sandbox round trip, no console errors, keyboard-only checkout.
-- [ ] Lighthouse on `/cart` and `/checkout` (accessibility, best practices ≥ 95); both pages `noindex`.
-- [ ] Full Pest suite, Pint, PHPStan. `code-reviewer` agent on the diff if the user asks for agents.
+- [x] Lighthouse on `/cart` and `/checkout` (accessibility, best practices ≥ 95); both pages `noindex`.
+- [x] Full Pest suite, Pint, PHPStan. `code-reviewer` agent on the diff if the user asks for agents.
 
 ## Security checklist
 
@@ -258,12 +257,51 @@ Placing the order (`PlaceOrderAction`, in `packages/storefront`):
 
 | Decision | Options | Recommendation | Needed by |
 |----------|---------|----------------|-----------|
-| What "online pay" means next to OnePay | (a) bank transfer with VietQR, confirmed by the admin by hand; (b) an e-wallet (MoMo/ZaloPay/VNPay); (c) OnePay international cards while "OnePay" is domestic cards | (a): no extra gateway contract, common in Vietnam | 3 |
-| Guest checkout | allowed (name + phone) / sign-in required | Allowed, sign-in optional; attach to the account if signed in | 2 |
-| Address at checkout | none (pickup only) / optional address for the VAT invoice | None now; add VAT invoice fields in a later plan | 3 |
-| OnePay endpoints | domestic only / international only / both | Both, shown as one "OnePay" method with a card-type choice on OnePay's side if the merchant account allows, else two radio options | 4 |
+| What "online pay" means next to OnePay | bank transfer + VietQR / e-wallet / OnePay international | **Decided 2026-11-08 by the user:** bank transfer with VietQR, admin confirms by hand | 3 |
+| Guest checkout | allowed (name + phone) / sign-in required | **Decided 2026-11-08 by the user:** guests check out with just name and phone | 2 |
+| Address at checkout | none (pickup only) / optional VAT address | **Decided 2026-11-08 by the user:** pickup only, no address | 3 |
+| OnePay endpoints | domestic / international / both | **Decided 2026-11-08 by the user:** domestic cards only | 4 |
 | Stock while unpaid | reserve at order time (current behaviour) / reserve only when paid | Reserve at order time; admin cancels unpaid orders (auto-cancel after N hours can come later) | 3 |
 
 ## Progress log
 
 - 2026-11-07: Plan written. Nothing implemented.
+- 2026-11-08: Decisions from the user: online pay = bank transfer with VietQR, guests check out with name + phone,
+  pickup only, OnePay domestic cards only.
+- 2026-11-08 Phase 1: Telegram config file (`SHOPPER_TELEGRAM_CONFIG`, `workbench/telegram.example.json`, `telegram.json`
+  in `.gitignore` and `.dockerignore`, read-only mount in `docker-compose.yml`), `TelegramConfig` (scoped),
+  `TelegramClient`, `OrderTelegramMessage` (storefront locale, escaped, ≤ 4096 chars), `SendTelegramOrderMessage`
+  job (after commit, 3 tries, logs instead of throwing), `shopper:storefront:telegram-test`. 15 tests.
+  Deviation: `orders` had no `metadata` column (only the docblock said so): core migration
+  `2026_11_08_000001_add_metadata_column_to_orders_table` + `array` cast.
+- 2026-11-08 Phase 2: `StorefrontCart`, `AddToCartAction` (variant picker via 409 + variants list, capped at stock),
+  `UpdateCartLineAction`, `RefreshCartAction` (drops unpublished/deleted/sold-out lines, follows DB prices, caps
+  quantities), `MergeCartOnLoginAction` (login + register), `CartPage` (`/cart`), add-to-cart form on product cards
+  (works without JS, Alpine `fetch` with toast and `<dialog>` variant picker instead of a Livewire component per
+  card), mini cart links. Fixes found on the way: Livewire updates lost the storefront language (now persistent
+  middleware), SEO head accepts `noindex` in the context for private pages. 21 tests.
+- 2026-11-08 Phase 3: `OrderDetails` on `CreateOrderFromCartAction` (payment method, note, metadata). Contact is kept
+  in `orders.metadata.contact`, not a billing `OrderAddress` (that table requires street and postal code).
+  `CheckoutPage`, `PlaceOrderAction` (refresh → stop if the cart changed, double submit → same order),
+  confirmation page per method with VietQR (`img.vietqr.io`), `OrderAccess` (owner or placing session).
+  Payment methods migration creates `office`, `bank-transfer`, `onepay`; deviation: other methods are not disabled,
+  the checkout only offers the slugs in `shopper.storefront.checkout.payment_methods`. Payment logo resolver no longer
+  crashes for a driver that is not installed. Skipped: customer confirmation email (not asked for). 20 tests.
+- 2026-11-08 Phase 4: `packages/onepay` (driver, signer, response codes, `ConfirmOnePayPaymentAction` idempotent with
+  amount check, `StartOnePayPaymentAction`, IPN + return controllers, events → Telegram paid/failed, "Pay again").
+  The browser return only marks paid after QueryDR confirms; otherwise the IPN does it. Sandbox findings: the old
+  `onecomm-pay/vpc.op` + `ONEPAY` test merchant now answers "giao dịch không hợp lệ"; the working setup is
+  `paygate/vpcpay.op` + `TESTONEPAY`, `vpc_CardList=DOMESTIC` (straight to ATM bank choice) and QueryDR v2 at
+  `msp/api/v1/vpc/invoices/queries`. Redirect, signature of OnePay's real return and cancel → back to the order page
+  checked in the browser. Not done: a paid sandbox payment (the public test merchant lists no banks). 24 tests
+  (signature checked against a vector computed with Python).
+- 2026-11-08 Phase 5: cart/checkout JSON API with `X-Cart-Token` (`UseCartToken`, `StorefrontCart` scoped and
+  token-aware), admin "Checkout" tab (bank BIN/name/account/holder, pickup note), storefront contact panel on the
+  admin order page (render hook). Fixed: unprefixed `throttle:N,1` middlewares shared one counter per IP (plan 09
+  auth routes too), now each has its own prefix; English validation messages at checkout (no `vi/validation.php`);
+  mobile overflow (fieldset min-width, line controls wrap); header accessible names and contrast when signed in.
+  Browser: add to cart, quantities on cart and checkout, office/bank transfer orders, OnePay redirect + cancel,
+  admin panel, no console errors, no horizontal scroll at 390 px. Not checked: keyboard-only checkout, orders list
+  filter by payment method. Lighthouse mobile on `/checkout`: accessibility 100, best practices 100, SEO 83 (no meta
+  description on a noindex page). Test orders, carts, reservations and the demo bank account removed from the dev DB.
+  Full suite 1533 passed; Pint clean; PHPStan only the existing `RevisionKind` error. Agent reviews not run.

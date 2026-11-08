@@ -39,7 +39,7 @@
                     <a href="{{ $phoneHref }}" class="hidden items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10 md:flex">
                         <x-shopper-storefront::icon name="phone" class="size-6" />
                         <span class="text-left leading-tight">
-                            <span class="block text-xs text-white/80">{{ __('shopper-storefront::storefront.header.hotline') }}</span>
+                            <span class="block text-xs text-white">{{ __('shopper-storefront::storefront.header.hotline') }}</span>
                             <span class="block text-sm font-semibold">{{ $header->hotline }}</span>
                         </span>
                     </a>
@@ -52,15 +52,19 @@
                         x-on:click="open = ! open"
                         x-bind:aria-expanded="open"
                         aria-haspopup="true"
-                        aria-label="{{ __('shopper-storefront::storefront.header.account') }}"
+                        @auth(config('shopper.auth.guard', 'web'))
+                            aria-label="{{ __('shopper-storefront::storefront.header.hello') }} {{ $user->first_name ?: $user->email }}, {{ mb_strtolower(__('shopper-storefront::storefront.header.account')) }}"
+                        @else
+                            aria-label="{{ __('shopper-storefront::storefront.header.account') }} {{ __('shopper-storefront::storefront.header.sign_in') }}"
+                        @endauth
                     >
                         <x-shopper-storefront::icon name="user" class="size-6" />
                         <span class="hidden text-left leading-tight sm:block">
                             @auth(config('shopper.auth.guard', 'web'))
-                                <span class="block text-xs text-white/80">{{ __('shopper-storefront::storefront.header.hello') }}</span>
+                                <span class="block text-xs text-white">{{ __('shopper-storefront::storefront.header.hello') }}</span>
                                 <span class="block max-w-28 truncate text-sm font-semibold">{{ $user->first_name ?: $user->email }}</span>
                             @else
-                                <span class="block text-xs text-white/80">{{ __('shopper-storefront::storefront.header.account') }}</span>
+                                <span class="block text-xs text-white">{{ __('shopper-storefront::storefront.header.account') }}</span>
                                 <span class="block text-sm font-semibold">{{ __('shopper-storefront::storefront.header.sign_in') }}</span>
                             @endauth
                         </span>
