@@ -24,7 +24,10 @@
 
             <a href="{{ route('shopper.storefront.home') }}" class="flex shrink-0 items-center gap-2" aria-label="{{ $header->storeName ?? config('app.name') }}">
                 @if ($header->logo)
-                    <img src="{{ $header->logo }}" alt="{{ $header->storeName }}" class="h-9 w-auto max-w-40 object-contain" />
+                    {{-- White backing: logos with red in them stay visible on the red header. --}}
+                    <span class="flex h-10 items-center rounded-lg bg-white px-2 py-1">
+                        <img src="{{ $header->logo }}" alt="{{ $header->storeName }}" class="h-full w-auto max-w-40 object-contain" />
+                    </span>
                 @else
                     <span class="text-xl font-extrabold tracking-tight">{{ $header->storeName ?? config('app.name') }}</span>
                 @endif

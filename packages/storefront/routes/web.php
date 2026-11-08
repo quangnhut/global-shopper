@@ -7,9 +7,11 @@ use Shopper\Storefront\Http\Controllers\Auth\LoginController;
 use Shopper\Storefront\Http\Controllers\Auth\PasswordResetController;
 use Shopper\Storefront\Http\Controllers\Auth\RegisterController;
 use Shopper\Storefront\Http\Controllers\CartController;
+use Shopper\Storefront\Http\Controllers\CategoryController;
 use Shopper\Storefront\Http\Controllers\CheckoutController;
 use Shopper\Storefront\Http\Controllers\HomeController;
 use Shopper\Storefront\Http\Controllers\LegalController;
+use Shopper\Storefront\Http\Controllers\ProductController;
 use Shopper\Storefront\Http\Controllers\SearchController;
 
 // Only loaded when `shopper.storefront.routes.enabled` is true. Paths come from `shopper.storefront.paths`.
@@ -21,6 +23,11 @@ Route::middleware([...config('shopper.storefront.routes.middleware', ['web']), '
         Route::get('/', HomeController::class)->name('home');
         Route::get($path('search', '/search'), SearchController::class)->name('search');
         Route::get(str_replace('{slug}', '{legal:slug}', $path('legal', '/policies/{slug}')), LegalController::class)->name('legal');
+
+        // Shop entity paths are shared with the SEO module (sitemaps, canonical URLs).
+        $categoryPath = (string) config('shopper.seo.paths.category', '/categories/{slug}');
+        Route::get($categoryPath, CategoryController::class)->where('slug', '[^/]+')->name('category');
+        Route::get((string) config('shopper.seo.paths.product', '/products/{slug}'), ProductController::class)->where('slug', '[^/]+')->name('product');
 
         Route::get($path('cart', '/cart'), [CartController::class, 'show'])->name('cart');
         Route::post('cart/lines', [CartController::class, 'store'])->middleware('throttle:30,1,sf-cart-lines-store')->name('cart.lines.store');

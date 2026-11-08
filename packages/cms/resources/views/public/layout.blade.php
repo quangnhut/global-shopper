@@ -11,7 +11,7 @@
             header, main, footer { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
             header a { font-weight: 600; text-decoration: none; color: inherit; }
             .meta { color: var(--muted); font-size: 0.9rem; }
-            .content img { max-width: 100%; height: auto; }
+            main img { max-width: 100%; height: auto; }
             .alignleft { float: left; margin: 0 1em 1em 0; }
             .aligncenter { display: block; margin: 0 auto 1em; }
             .alignright { float: right; margin: 0 0 1em 1em; }

@@ -20,7 +20,7 @@ final class TemplateRenderer
      */
     public static function excerpt(?string $html, int $length = 155): string
     {
-        $text = mb_trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) $html), ENT_QUOTES | ENT_HTML5)));
+        $text = mb_trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags(self::plainTextHtml((string) $html)), ENT_QUOTES | ENT_HTML5)));
 
         if (mb_strlen($text) <= $length) {
             return $text;
@@ -56,5 +56,16 @@ final class TemplateRenderer
         $text = str_replace("\u{1F}", $separator, $text);
 
         return mb_trim((string) preg_replace('/\s{2,}/u', ' ', $text));
+    }
+
+    /**
+     * Drops what `strip_tags()` would turn into text (scripts, styles) and keeps words of
+     * adjacent blocks apart (`<p>a</p><p>b</p>` → `a b`, not `ab`).
+     */
+    private static function plainTextHtml(string $html): string
+    {
+        $html = (string) preg_replace('#<(script|style|template|noscript)\b[^>]*>.*?</\1\s*>#is', ' ', $html);
+
+        return (string) preg_replace('#<(/?(p|div|li|ul|ol|h[1-6]|tr|td|th|blockquote|section|article)\b[^>]*|br\s*/?)>#i', ' $0', $html);
     }
 }

@@ -31,3 +31,8 @@ describe(TemplateRenderer::class, function (): void {
             ->and(TemplateRenderer::excerpt('<p>Short &amp; sweet</p>'))->toBe('Short & sweet');
     });
 })->group('seo');
+
+it('leaves scripts out of excerpts and keeps words of adjacent blocks apart', function (): void {
+    expect(TemplateRenderer::excerpt('<p>Màn hình <strong>6,3 inch</strong></p><script>alert(1)</script><style>p{}</style><p>Pin 4000 mAh</p>'))
+        ->toBe('Màn hình 6,3 inch Pin 4000 mAh');
+});

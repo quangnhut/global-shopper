@@ -49,7 +49,6 @@ final class HomepageSeeder extends Seeder
 
         $settings->save([
             'hotline' => '1900 1234',
-            'announcement' => 'Miễn phí vận chuyển cho đơn hàng từ 500.000 ₫',
             'working_hours' => '8:00 – 21:00, Thứ 2 – Chủ nhật',
             'business_registration' => '0123456789 (demo)',
             'registration_issued' => 'Cấp ngày 01/01/2024 tại Sở KH&ĐT TP. Hồ Chí Minh (demo)',
