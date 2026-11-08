@@ -16,6 +16,9 @@ return [
         'menu' => 'Danh mục',
         'open_menu' => 'Mở danh mục',
         'close_menu' => 'Đóng danh mục',
+        'language' => 'Ngôn ngữ',
+        'translate_failed' => 'Không thể dịch trang lúc này. Vui lòng thử lại sau.',
+        'translating' => 'Đang dịch…',
     ],
     'search' => [
         'label' => 'Tìm kiếm sản phẩm',

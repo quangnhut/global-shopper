@@ -145,4 +145,28 @@ return [
         'config_path' => env('SHOPPER_TELEGRAM_CONFIG', base_path('telegram.json')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Page translation (Google Translate)
+    |--------------------------------------------------------------------------
+    |
+    | Language picker in the header that translates the page in the browser
+    | with Google's website translator. The script is loaded only once a
+    | customer picks another language, and that sends the page text to Google.
+    | `languages` keys are Google language codes; `flag` is a flag component code.
+    | Admins can also hide the picker under Storefront → Header & footer.
+    |
+    */
+
+    'translate' => [
+        'enabled' => (bool) env('SHOPPER_STOREFRONT_TRANSLATE', true),
+        'page_language' => 'vi',
+        'script' => 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit',
+        'languages' => [
+            'vi' => ['label' => 'Tiếng Việt', 'short' => 'VI', 'flag' => 'vn'],
+            'en' => ['label' => 'English', 'short' => 'EN', 'flag' => 'gb'],
+            'zh-CN' => ['label' => '中文 (简体)', 'short' => '中文', 'flag' => 'cn'],
+        ],
+    ],
+
 ];

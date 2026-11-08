@@ -22,14 +22,14 @@
                 <x-shopper-storefront::icon name="menu" class="size-6" />
             </button>
 
-            <a href="{{ route('shopper.storefront.home') }}" class="flex shrink-0 items-center gap-2" aria-label="{{ $header->storeName ?? config('app.name') }}">
+            <a href="{{ route('shopper.storefront.home') }}" class="notranslate flex shrink-0 items-center gap-2" translate="no" aria-label="{{ $header->storeName ?? config('app.name') }}">
                 @if ($header->logo)
                     {{-- White backing: logos with red in them stay visible on the red header. --}}
                     <span class="flex h-10 items-center rounded-lg bg-white px-2 py-1">
                         <img src="{{ $header->logo }}" alt="{{ $header->storeName }}" class="h-full w-auto max-w-40 object-contain" />
                     </span>
                 @else
-                    <span class="text-xl font-extrabold tracking-tight">{{ $header->storeName ?? config('app.name') }}</span>
+                    <span class="text-xl font-extrabold tracking-tight" translate="no">{{ $header->storeName ?? config('app.name') }}</span>
                 @endif
             </a>
 
@@ -38,12 +38,16 @@
             </div>
 
             <div class="ml-auto flex items-center gap-1 sm:gap-3 lg:ml-0">
+                @if ($header->translates())
+                    @include('shopper-storefront::partials.language-picker', ['languages' => $header->languages, 'variant' => 'header'])
+                @endif
+
                 @if ($header->hotline)
                     <a href="{{ $phoneHref }}" class="hidden items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10 md:flex">
                         <x-shopper-storefront::icon name="phone" class="size-6" />
                         <span class="text-left leading-tight">
-                            <span class="block text-xs text-white">{{ __('shopper-storefront::storefront.header.hotline') }}</span>
-                            <span class="block text-sm font-semibold">{{ $header->hotline }}</span>
+                            <span class="block text-xs text-white" translate="no">{{ __('shopper-storefront::storefront.header.hotline') }}</span>
+                            <span class="block text-sm font-semibold"><span translate="no">{{ $header->hotline }}</span></span>
                         </span>
                     </a>
                 @endif
@@ -182,6 +186,10 @@
                 @endauth
             </div>
 
+            @if ($header->translates())
+                @include('shopper-storefront::partials.language-picker', ['languages' => $header->languages, 'variant' => 'drawer'])
+            @endif
+
             <ul class="flex-1 p-2 text-sm">
                 @foreach ($header->categories as $category)
                     <li x-data="{ open: false }">
@@ -207,7 +215,7 @@
             @if ($header->hotline)
                 <a href="{{ $phoneHref }}" class="m-4 flex items-center justify-center gap-2 rounded-lg bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700">
                     <x-shopper-storefront::icon name="phone" />
-                    {{ __('shopper-storefront::storefront.header.hotline') }}: {{ $header->hotline }}
+                    {{ __('shopper-storefront::storefront.header.hotline') }}: <span translate="no">{{ $header->hotline }}</span>
                 </a>
             @endif
         </div>

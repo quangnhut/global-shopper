@@ -28,6 +28,7 @@ final class StorefrontSettings
         'header_logo' => null,
         'announcement' => null,
         'menu_category_ids' => [],
+        'translate_enabled' => true,
         // Company
         'working_hours' => null,
         'business_registration' => null,

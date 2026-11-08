@@ -24,7 +24,7 @@
                     </li>
                 @endif
                 @if ($phoneHref)
-                    <li class="flex gap-2"><x-shopper-storefront::icon name="phone" class="mt-0.5 size-4 text-gray-400" /><a href="{{ $phoneHref }}" class="hover:text-brand-700">{{ __('shopper-storefront::storefront.header.hotline') }}: {{ $company['phone'] }}</a></li>
+                    <li class="flex gap-2"><x-shopper-storefront::icon name="phone" class="mt-0.5 size-4 text-gray-400" /><a href="{{ $phoneHref }}" class="hover:text-brand-700">{{ __('shopper-storefront::storefront.header.hotline') }}: <span translate="no">{{ $company['phone'] }}</span></a></li>
                 @endif
                 @if (filled($company['email'] ?? null))
                     <li class="flex gap-2"><x-shopper-storefront::icon name="mail" class="mt-0.5 size-4 text-gray-400" /><a href="mailto:{{ $company['email'] }}" class="hover:text-brand-700">{{ $company['email'] }}</a></li>

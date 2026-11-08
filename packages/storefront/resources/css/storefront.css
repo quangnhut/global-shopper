@@ -172,3 +172,33 @@
         @apply list-decimal space-y-1 pl-6;
     }
 }
+
+/*
+ * Google Translate (header language picker): keep Google's own UI out of the page.
+ * Not in a layer and with !important, because Google sets inline styles (body `top: 40px`).
+ * Class names: the classic ones plus the obfuscated `VIpgJd-*` names Google uses since 2023.
+ */
+.sf-translate-widget,
+body > .skiptranslate,
+iframe.skiptranslate,
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-tooltip,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-yAWNEb-L7lbkb {
+    display: none !important;
+}
+
+html.translated-ltr body,
+html.translated-rtl body,
+body {
+    top: 0 !important;
+}
+
+.goog-text-highlight,
+[class*='VIpgJd-yAWNEb-VIpgJd-fmcmS'] {
+    background: none !important;
+    box-shadow: none !important;
+}

@@ -47,6 +47,12 @@ final class HomepageSeeder extends Seeder
         $legal = fn (string $slug): ?int => Legal::query()->where('slug', $slug)->value('id');
         $link = fn (string $type, ?int $id): ?array => $id === null ? null : ['type' => $type, 'id' => $id, 'url' => null, 'label' => null];
 
+        // Demo privacy text: the header language picker sends page text to Google Translate when a customer uses it.
+        Legal::query()->where('slug', 'privacy')->whereNull('content')->update([
+            'content' => '<p>Khi bạn chọn English hoặc 中文 ở bộ chọn ngôn ngữ trên đầu trang, nội dung trang được gửi tới Google Dịch '
+                .'để dịch ngay trong trình duyệt của bạn. Chúng tôi không gửi thông tin nào tới Google nếu bạn giữ Tiếng Việt.</p>',
+        ]);
+
         $settings->save([
             'hotline' => '1900 1234',
             'working_hours' => '8:00 – 21:00, Thứ 2 – Chủ nhật',

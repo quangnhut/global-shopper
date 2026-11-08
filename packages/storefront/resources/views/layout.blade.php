@@ -40,6 +40,7 @@
         @include('shopper-storefront::partials.footer', ['footer' => $footer])
 
         @includeWhen(\Illuminate\Support\Facades\Route::has('shopper.storefront.cart.lines.store'), 'shopper-storefront::partials.cart-scripts')
+        @includeWhen($header->translates(), 'shopper-storefront::partials.translate-scripts', ['languages' => $header->languages])
         @livewireScripts
         <x-shopper-seo::body-close />
     </body>

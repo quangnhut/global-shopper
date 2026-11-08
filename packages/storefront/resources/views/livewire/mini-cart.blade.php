@@ -22,13 +22,13 @@
                 @foreach ($this->cart->lines as $line)
                     <li class="flex justify-between gap-3 py-2">
                         <span class="min-w-0"><span class="block truncate">{{ $line->purchasable?->name ?? '—' }}</span><span class="text-xs text-gray-500">× {{ $line->quantity }}</span></span>
-                        <span class="shrink-0 font-medium">{{ shopper_money_format((int) ($line->unit_price_amount * $line->quantity), $this->cart->currency_code) }}</span>
+                        <span class="shrink-0 font-medium"><span translate="no">{{ shopper_money_format((int) ($line->unit_price_amount * $line->quantity), $this->cart->currency_code) }}</span></span>
                     </li>
                 @endforeach
             </ul>
             <div class="mt-3 flex justify-between border-t border-gray-100 pt-3 font-semibold">
                 <span>{{ __('shopper-storefront::storefront.cart.subtotal') }}</span>
-                <span class="text-brand-600">{{ shopper_money_format($this->subtotal(), $this->cart->currency_code) }}</span>
+                <span class="text-brand-600"><span translate="no">{{ shopper_money_format($this->subtotal(), $this->cart->currency_code) }}</span></span>
             </div>
             @if (\Illuminate\Support\Facades\Route::has('shopper.storefront.cart'))
                 <div class="mt-3 grid grid-cols-2 gap-2">

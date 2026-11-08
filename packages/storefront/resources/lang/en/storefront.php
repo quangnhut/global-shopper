@@ -16,6 +16,9 @@ return [
         'menu' => 'Categories',
         'open_menu' => 'Open categories',
         'close_menu' => 'Close categories',
+        'language' => 'Language',
+        'translate_failed' => 'The page cannot be translated right now. Please try again later.',
+        'translating' => 'Translating…',
     ],
     'search' => [
         'label' => 'Search products',

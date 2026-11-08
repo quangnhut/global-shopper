@@ -85,6 +85,8 @@ return [
         'hotline_help' => 'Hiển thị ở header và footer. Mặc định là số điện thoại của cửa hàng.',
         'announcement' => 'Thanh thông báo',
         'announcement_help' => 'Không bắt buộc. Dòng chữ ngắn phía trên header, VD: ưu đãi miễn phí vận chuyển.',
+        'translate_enabled' => 'Hiện bộ chọn ngôn ngữ (Google Dịch)',
+        'translate_enabled_help' => 'Khách chọn Tiếng Việt, English hoặc 中文 trên header; trang được Google dịch tự động trong trình duyệt. Nội dung trang chỉ được gửi tới Google khi khách chọn ngôn ngữ khác.',
         'header_logo' => 'Logo header',
         'header_logo_help' => 'Mặc định là logo cửa hàng (Cài đặt → Chung).',
         'menu_categories' => 'Danh mục trên menu',

@@ -37,7 +37,9 @@ with sections configured in the admin (Storefront → Homepage), header/footer s
 sign-in, as a Blade theme plus `GET /api/storefront/home` and `/api/storefront/search`. Plan 10 added the cart
 (`/cart`), checkout (`/checkout`, pickup at the office only, no shipping) and order confirmation pages, the cart/checkout
 JSON API (`/api/storefront/cart…`, `X-Cart-Token` header) and Telegram order alerts. `packages/onepay`
-(`Shopper\OnePay\OnePayServiceProvider`) is the OnePay domestic-card payment driver used at checkout.
+(`Shopper\OnePay\OnePayServiceProvider`) is the OnePay domestic-card payment driver used at checkout. Plan 11 added a header
+language picker (Tiếng Việt / English / 中文) that translates storefront pages in the browser with Google's website
+translator (`element.js`).
 
 ## Running the Project
 
@@ -101,6 +103,12 @@ npm install && npm run dev                    # only when changing admin CSS/JS 
   cancel/return flow work, but its sandbox lists no banks, so a paid order cannot be simulated without the
   sandbox account from the OnePay contract. The IPN cannot reach localhost.
 - After editing `workbench/.env`, `docker compose restart app`: the entrypoint copies it into the skeleton app.
+- Header language picker (plan 11): Google's `element.js` is injected only after a customer picks English or 中文
+  (or comes back with Google's `googtrans` cookie), and from then on the page text goes to Google. Turn it off with
+  `SHOPPER_STOREFRONT_TRANSLATE=false` or under Storefront → Header & footer. Wrap values Google must not rewrite
+  (prices, order numbers, phone numbers, SKUs) in `<span translate="no">`. `element.js` is a legacy Google product
+  with no SLA; the picker shows an error and stays in Vietnamese if it cannot load. After changing the shape of
+  `HeaderData`, `FooterData` or `HomePageData`, bump `StorefrontCache::SCHEMA`.
 - Admin uploads are stored in `./uploads` on the host and served at `/storage/uploads/YYYY/MM/...`.
 - Scheduled CMS commands (`shopper:cms:publish-scheduled`, `shopper:cms:empty-trash`) do not run automatically
   in dev; call them with `docker compose exec -T app vendor/bin/testbench <command>`.

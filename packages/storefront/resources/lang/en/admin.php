@@ -85,6 +85,8 @@ return [
         'hotline_help' => 'Shown in the header and footer. Defaults to the store phone number.',
         'announcement' => 'Announcement bar',
         'announcement_help' => 'Optional short text above the header, e.g. a free-shipping offer.',
+        'translate_enabled' => 'Show the language picker (Google Translate)',
+        'translate_enabled_help' => 'Customers pick Tiếng Việt, English or 中文 in the header and Google translates the page in their browser. Page text is sent to Google only once a customer picks another language.',
         'header_logo' => 'Header logo',
         'header_logo_help' => 'Defaults to the store logo (Settings → General).',
         'menu_categories' => 'Categories in the menu',

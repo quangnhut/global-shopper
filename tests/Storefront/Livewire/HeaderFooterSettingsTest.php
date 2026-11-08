@@ -99,3 +99,15 @@ describe(HeaderFooterSettings::class, function (): void {
         Livewire::test(HeaderFooterSettings::class)->assertForbidden();
     });
 });
+
+describe('language picker switch', function (): void {
+    it('is on by default and can be turned off', function (): void {
+        Livewire::test(HeaderFooterSettings::class)
+            ->assertSchemaStateSet(['translate_enabled' => true])
+            ->fillForm(['translate_enabled' => false])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        expect(resolve(StorefrontSettings::class)->get('translate_enabled'))->toBeFalse();
+    });
+});

@@ -37,11 +37,11 @@
             <a href="{{ $product->url }}" class="after:absolute after:inset-0 hover:text-brand-700">{{ $product->name }}</a>
         </h3>
         <div class="mt-auto">
-            <p class="text-base font-bold text-brand-600">{{ $product->formattedPrice() }}</p>
+            <p class="text-base font-bold text-brand-600"><span translate="no">{{ $product->formattedPrice() }}</span></p>
             @if ($product->formattedComparePrice())
                 <p class="text-xs text-gray-500 line-through">
                     <span class="sr-only">{{ __('shopper-storefront::storefront.product.compare_price') }}</span>
-                    {{ $product->formattedComparePrice() }}
+                    <span translate="no">{{ $product->formattedComparePrice() }}</span>
                 </p>
             @endif
         </div>

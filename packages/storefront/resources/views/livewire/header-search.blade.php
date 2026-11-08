@@ -36,7 +36,7 @@
                     @endif
                     <span class="min-w-0 flex-1">
                         <span class="block truncate text-sm">{{ $item->name }}</span>
-                        <span class="block text-sm font-semibold text-brand-600">{{ $item->formattedPrice() }}</span>
+                        <span class="block text-sm font-semibold text-brand-600"><span translate="no">{{ $item->formattedPrice() }}</span></span>
                     </span>
                 </a>
             @empty

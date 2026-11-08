@@ -10,6 +10,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
@@ -103,6 +104,7 @@ class HeaderFooterSettings extends AbstractPageComponent implements HasActions, 
             ->values()
             ->all();
         $data['extra_partners'] = array_values($data['extra_partners'] ?? []);
+        $data['translate_enabled'] = (bool) ($data['translate_enabled'] ?? true);
 
         foreach (['menu_category_ids', 'carrier_ids', 'payment_method_ids'] as $key) {
             $data[$key] = array_values(array_map('intval', $data[$key] ?? []));
@@ -155,6 +157,10 @@ class HeaderFooterSettings extends AbstractPageComponent implements HasActions, 
                     ->multiple()
                     ->searchable()
                     ->options(fn (): array => Category::query()->enabled()->whereNull('parent_id')->orderBy('position')->pluck('name', 'id')->all()),
+                Toggle::make('translate_enabled')
+                    ->label(__('shopper-storefront::admin.settings.translate_enabled'))
+                    ->helperText(__('shopper-storefront::admin.settings.translate_enabled_help'))
+                    ->columnSpanFull(),
             ]),
         ];
     }

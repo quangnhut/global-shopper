@@ -22,7 +22,7 @@
                 <x-shopper-storefront::icon name="check" class="size-7" />
             </div>
             <h1 class="mt-3 text-xl font-bold text-gray-900">{{ __('shopper-storefront::checkout.thanks.title') }}</h1>
-            <p class="mt-1 text-gray-600">{{ __('shopper-storefront::checkout.thanks.number') }} <strong class="text-gray-900">{{ $order->number }}</strong></p>
+            <p class="mt-1 text-gray-600">{{ __('shopper-storefront::checkout.thanks.number') }} <strong class="text-gray-900"><span translate="no">{{ $order->number }}</span></strong></p>
             <p class="mt-1 text-sm text-gray-500">{{ __('shopper-storefront::checkout.thanks.contact_soon', ['phone' => $contact['phone'] ?? '']) }}</p>
         </div>
 
@@ -42,10 +42,10 @@
                             />
                             <dl class="space-y-2 text-sm">
                                 <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.bank') }}</dt><dd class="font-medium text-gray-900">{{ $bank['bank'] }}</dd></div>
-                                <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.account_number') }}</dt><dd class="font-mono text-base font-semibold text-gray-900">{{ $bank['number'] }}</dd></div>
+                                <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.account_number') }}</dt><dd class="font-mono text-base font-semibold text-gray-900"><span translate="no">{{ $bank['number'] }}</span></dd></div>
                                 <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.account_name') }}</dt><dd class="font-medium text-gray-900">{{ $bank['name'] }}</dd></div>
-                                <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.amount') }}</dt><dd class="text-base font-bold text-brand-600">{{ shopper_money_format((int) $order->price_amount, $currency) }}</dd></div>
-                                <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.content') }}</dt><dd class="font-mono text-base font-semibold text-gray-900">{{ $order->number }}</dd></div>
+                                <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.amount') }}</dt><dd class="text-base font-bold text-brand-600"><span translate="no">{{ shopper_money_format((int) $order->price_amount, $currency) }}</span></dd></div>
+                                <div><dt class="text-gray-500">{{ __('shopper-storefront::checkout.bank.content') }}</dt><dd class="font-mono text-base font-semibold text-gray-900"><span translate="no">{{ $order->number }}</span></dd></div>
                             </dl>
                         </div>
                         <p class="mt-4 text-sm text-gray-600">{{ __('shopper-storefront::checkout.bank.confirm') }}</p>
@@ -89,13 +89,13 @@
                 @foreach ($order->items as $item)
                     <li class="flex justify-between gap-4 py-2">
                         <span>{{ $item->name }} <span class="text-gray-500">× {{ $item->quantity }}</span></span>
-                        <span class="font-medium">{{ shopper_money_format($item->unit_price_amount * $item->quantity, $currency) }}</span>
+                        <span class="font-medium"><span translate="no">{{ shopper_money_format($item->unit_price_amount * $item->quantity, $currency) }}</span></span>
                     </li>
                 @endforeach
             </ul>
             <p class="mt-3 flex justify-between border-t border-gray-100 pt-3 text-base font-bold">
                 <span>{{ __('shopper-storefront::cart.total') }}</span>
-                <span class="text-brand-600">{{ shopper_money_format((int) $order->price_amount, $currency) }}</span>
+                <span class="text-brand-600"><span translate="no">{{ shopper_money_format((int) $order->price_amount, $currency) }}</span></span>
             </p>
             @if (filled($order->notes))
                 <p class="mt-3 text-sm text-gray-600"><span class="font-medium">{{ __('shopper-storefront::checkout.fields.note') }}:</span> {{ $order->notes }}</p>

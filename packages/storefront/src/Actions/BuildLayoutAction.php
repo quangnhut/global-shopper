@@ -57,7 +57,29 @@ final readonly class BuildLayoutAction
             hotline: $this->settings->hotline(),
             announcement: $this->settings->get('announcement'),
             categories: $this->categories(),
+            languages: $this->languages(),
         );
+    }
+
+    /**
+     * Languages of the header picker, or none when the config or the admin switch turns it off.
+     *
+     * @return array<string, array{label: string, short: string, flag: string}>
+     */
+    private function languages(): array
+    {
+        if (! config('shopper.storefront.translate.enabled') || ! filter_var($this->settings->get('translate_enabled', true), FILTER_VALIDATE_BOOL)) {
+            return [];
+        }
+
+        return collect((array) config('shopper.storefront.translate.languages', []))
+            ->filter(fn (mixed $language, string|int $code): bool => is_string($code) && is_array($language) && filled($language['label'] ?? null))
+            ->map(fn (array $language): array => [
+                'label' => (string) $language['label'],
+                'short' => (string) ($language['short'] ?? mb_strtoupper(mb_substr((string) $language['label'], 0, 2))),
+                'flag' => (string) ($language['flag'] ?? ''),
+            ])
+            ->all();
     }
 
     /**

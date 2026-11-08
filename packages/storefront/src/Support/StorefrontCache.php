@@ -18,6 +18,9 @@ final class StorefrontCache
 {
     private const string VERSION_KEY = 'shopper-storefront:version';
 
+    /** Bump when the cached data classes change shape, so entries cached by older code are never read back. */
+    private const int SCHEMA = 2;
+
     public static function home(): HomePageData
     {
         return Cache::remember(
@@ -68,7 +71,7 @@ final class StorefrontCache
 
     private static function key(string $name): string
     {
-        return 'shopper-storefront:'.$name.':'.app()->getLocale().':'.self::version();
+        return 'shopper-storefront:'.$name.':s'.self::SCHEMA.':'.app()->getLocale().':'.self::version();
     }
 
     private static function version(): int

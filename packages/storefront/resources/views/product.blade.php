@@ -69,7 +69,7 @@
                 @endif
                 <h1 class="mt-1 text-2xl font-bold text-gray-900">{{ $product->name }}</h1>
                 @if ($product->sku)
-                    <p class="mt-1 text-sm text-gray-500">{{ __('shopper-storefront::catalog.product.sku') }}: {{ $product->sku }}</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('shopper-storefront::catalog.product.sku') }}: <span translate="no">{{ $product->sku }}</span></p>
                 @endif
 
                 <div class="mt-4 flex flex-wrap items-baseline gap-3">
@@ -77,10 +77,10 @@
                         @if ($variants !== [] && count(array_unique(array_column($variants, 'price'))) > 1)
                             <span class="text-base font-medium text-gray-500">{{ __('shopper-storefront::catalog.product.from') }}</span>
                         @endif
-                        {{ $card->formattedPrice() }}
+                        <span translate="no">{{ $card->formattedPrice() }}</span>
                     </p>
                     @if ($card->formattedComparePrice())
-                        <p class="text-lg text-gray-500 line-through"><span class="sr-only">{{ __('shopper-storefront::storefront.product.compare_price') }}</span> {{ $card->formattedComparePrice() }}</p>
+                        <p class="text-lg text-gray-500 line-through"><span class="sr-only">{{ __('shopper-storefront::storefront.product.compare_price') }}</span> <span translate="no">{{ $card->formattedComparePrice() }}</span></p>
                     @endif
                 </div>
 
@@ -131,7 +131,7 @@
                 <ul class="mt-6 space-y-2 border-t border-gray-100 pt-4 text-sm text-gray-600">
                     <li class="flex items-center gap-2"><x-shopper-storefront::icon name="store" class="size-5 text-brand-600" /> {{ __('shopper-storefront::catalog.product.pickup') }}</li>
                     @if ($header->hotline ?? null)
-                        <li class="flex items-center gap-2"><x-shopper-storefront::icon name="phone" class="size-5 text-brand-600" /> {{ __('shopper-storefront::catalog.product.hotline') }} <a href="tel:{{ preg_replace('/\s+/', '', $header->hotline) }}" class="font-semibold text-gray-900">{{ $header->hotline }}</a></li>
+                        <li class="flex items-center gap-2"><x-shopper-storefront::icon name="phone" class="size-5 text-brand-600" /> {{ __('shopper-storefront::catalog.product.hotline') }} <a href="tel:{{ preg_replace('/\s+/', '', $header->hotline) }}" class="font-semibold text-gray-900"><span translate="no">{{ $header->hotline }}</span></a></li>
                     @endif
                 </ul>
             </div>

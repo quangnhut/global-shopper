@@ -25,7 +25,7 @@
                     @if ($line->variant)
                         <p class="text-sm text-gray-500">{{ $line->variant }}</p>
                     @endif
-                    <p class="text-sm text-gray-600">{{ $line->formattedUnitPrice() }}</p>
+                    <p class="text-sm text-gray-600"><span translate="no">{{ $line->formattedUnitPrice() }}</span></p>
                     @error('lines.'.$line->id)
                         <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                     @enderror
@@ -59,7 +59,7 @@
                             <x-shopper-storefront::icon name="trash" class="size-5" />
                         </button>
                     </div>
-                    <p class="font-semibold text-gray-900">{{ $line->formattedTotal() }}</p>
+                    <p class="font-semibold text-gray-900"><span translate="no">{{ $line->formattedTotal() }}</span></p>
                 </div>
             </div>
         </li>

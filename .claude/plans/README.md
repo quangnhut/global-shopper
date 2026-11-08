@@ -20,6 +20,7 @@ Run a plan with the `implement-plan` skill: "implement plan 01", "continue plan 
 | 08 | [SEO output: head tags, JSON-LD, sitemaps, robots.txt, GTM](08-seo-output.md) | 06, 07 | Done |
 | 09 | [Storefront home page: header, configurable sections, footer](09-home-page-ui.md) | 01–03, 08 | Done |
 | 10 | [Cart and checkout pages (pickup only, office / online / OnePay payment, Telegram alerts)](10-cart-checkout-page.md) | 09 | Done (paid OnePay sandbox test pending) |
+| 11 | [Automatic page translation for customers (Google Translate picker: VI / EN / 中文)](11-auto-translate-customer.md) | 09, 10 | Done |
 
 02 and 07 can run in parallel with other work once 01 is done.
 
